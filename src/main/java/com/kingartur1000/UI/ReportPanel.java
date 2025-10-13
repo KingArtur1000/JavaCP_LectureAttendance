@@ -1,7 +1,7 @@
 package com.kingartur1000.UI;
 
-import Entities.Group;
-import Entities.Student;
+import com.kingartur1000.Entities.Group;
+import com.kingartur1000.Entities.Student;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;

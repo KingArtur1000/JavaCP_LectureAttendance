@@ -1,8 +1,8 @@
 package com.kingartur1000.UI;
 
-import Entities.Group;
-import Entities.Student;
-import Entities.StudentTable;
+import com.kingartur1000.Entities.Group;
+import com.kingartur1000.Entities.Student;
+import com.kingartur1000.Entities.StudentTable;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

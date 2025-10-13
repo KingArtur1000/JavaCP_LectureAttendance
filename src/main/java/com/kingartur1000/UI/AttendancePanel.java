@@ -1,9 +1,9 @@
 package com.kingartur1000.UI;
 
-import Entities.AttendanceRecord;
-import Entities.AttendanceTable;
-import Entities.Group;
-import Entities.Student;
+import com.kingartur1000.Entities.AttendanceRecord;
+import com.kingartur1000.Entities.AttendanceTable;
+import com.kingartur1000.Entities.Group;
+import com.kingartur1000.Entities.Student;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
