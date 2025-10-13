@@ -15,7 +15,7 @@ public class MainWindow {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Учет посещаемости лекционных занятий");
+            JFrame frame = new JFrame("Курсовой проект Дмитриева А.А. - Учет посещаемости лекционных занятий");
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
             frame.setSize(1000, 600);
 
@@ -92,8 +92,6 @@ public class MainWindow {
 
     private static List<Group> createDefaultGroups() {
         List<Group> defaultGroups = new java.util.ArrayList<>();
-        defaultGroups.add(new Group("10702423"));
-        defaultGroups.add(new Group("10702424"));
         return defaultGroups;
     }
 

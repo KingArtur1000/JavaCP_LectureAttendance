@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 public class StudentPanel extends GridPanel {
     private JTable table;
     private StudentTable studentTable;
-    private JTextField searchField;
+    private JLabel groupLabel;
     private Group currentGroup;
 
     public StudentPanel() {
@@ -28,16 +28,20 @@ public class StudentPanel extends GridPanel {
         buttonPanel.add(delBtn);
         buttonPanel.add(editBtn);
 
-        searchField = new JTextField("Поиск по фамилии...");
+        // Панель с информацией о группе
+        JPanel infoPanel = new JPanel();
+        groupLabel = new JLabel("Группа не выбрана");
+        groupLabel.setFont(groupLabel.getFont().deriveFont(14f));
+        infoPanel.add(new JLabel("Выбранная группа: "));
+        infoPanel.add(groupLabel);
 
         addToGrid(buttonPanel, 0, 0);
         addToGrid(new JScrollPane(table), 1, 0);
-        addToGrid(searchField, 2, 0);
+        addToGrid(infoPanel, 2, 0);
 
         addBtn.addActionListener(this::onAddStudent);
         delBtn.addActionListener(this::onDeleteStudent);
         editBtn.addActionListener(this::onEditStudent);
-        searchField.addActionListener(this::onSearch);
     }
 
     public void setGroup(Group g) {
@@ -45,9 +49,11 @@ public class StudentPanel extends GridPanel {
         if (g != null) {
             studentTable = new StudentTable(g.getStudents());
             table.setModel(studentTable);
+            groupLabel.setText(g.getName() + " (" + g.getStudents().size() + " студентов)");
         } else {
             studentTable = new StudentTable(new java.util.ArrayList<>());
             table.setModel(studentTable);
+            groupLabel.setText("Группа не выбрана");
         }
     }
 
@@ -63,6 +69,8 @@ public class StudentPanel extends GridPanel {
             currentGroup.addStudent(student);
             // Уведомляем таблицу об изменении
             studentTable.refresh();
+            // Обновляем счётчик студентов
+            groupLabel.setText(currentGroup.getName() + " (" + currentGroup.getStudents().size() + " студентов)");
         }
     }
 
@@ -74,6 +82,8 @@ public class StudentPanel extends GridPanel {
                 currentGroup.removeStudent(student);
                 // Уведомляем таблицу об изменении
                 studentTable.refresh();
+                // Обновляем счётчик студентов
+                groupLabel.setText(currentGroup.getName() + " (" + currentGroup.getStudents().size() + " студентов)");
             }
         } else {
             JOptionPane.showMessageDialog(this, "Выберите студента для удаления");
@@ -92,18 +102,5 @@ public class StudentPanel extends GridPanel {
         } else {
             JOptionPane.showMessageDialog(this, "Выберите студента для редактирования");
         }
-    }
-
-    private void onSearch(ActionEvent e) {
-        String query = searchField.getText().toLowerCase();
-        for (int i = 0; i < studentTable.getRowCount(); i++) {
-            String name = studentTable.getStudent(i).getFullName().toLowerCase();
-            if (name.contains(query)) {
-                table.setRowSelectionInterval(i, i);
-                table.scrollRectToVisible(table.getCellRect(i, 0, true));
-                return;
-            }
-        }
-        JOptionPane.showMessageDialog(this, "Студент не найден");
     }
 }

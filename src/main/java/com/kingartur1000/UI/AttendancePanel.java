@@ -18,12 +18,15 @@ public class AttendancePanel extends GridPanel {
     private AttendanceRecord currentRecord;
     private JTextField dateField;
     private LocalDate currentDate;
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public AttendancePanel() {
         super(3, 1);
 
         JPanel datePanel = new JPanel();
-        dateField = new JTextField("ДД.ММ.ГГГГ", 10);
+        // Устанавливаем сегодняшнюю дату по умолчанию
+        LocalDate today = LocalDate.now();
+        dateField = new JTextField(today.format(DATE_FORMATTER), 10);
         JButton pickBtn = new JButton("Выбрать");
         datePanel.add(new JLabel("Дата:"));
         datePanel.add(dateField);
@@ -60,10 +63,10 @@ public class AttendancePanel extends GridPanel {
 
     private void onPickDate(ActionEvent e) {
         try {
-            LocalDate date = LocalDate.parse(dateField.getText(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            LocalDate date = LocalDate.parse(dateField.getText(), DATE_FORMATTER);
             currentDate = date;
             loadAttendanceForDate(date);
-            JOptionPane.showMessageDialog(this, "Выбрана дата: " + date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+            JOptionPane.showMessageDialog(this, "Выбрана дата: " + date.format(DATE_FORMATTER));
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Неверный формат даты. Используйте ДД.ММ.ГГГГ");
         }
@@ -98,7 +101,7 @@ public class AttendancePanel extends GridPanel {
         }
 
         StringBuilder sb = new StringBuilder("Посещаемость для группы " + currentGroup.getName() +
-                " на дату " + currentDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + ":\n\n");
+                " на дату " + currentDate.format(DATE_FORMATTER) + ":\n\n");
 
         for (int i = 0; i < attendanceTable.getRowCount(); i++) {
             Student s = attendanceTable.getStudent(i);
