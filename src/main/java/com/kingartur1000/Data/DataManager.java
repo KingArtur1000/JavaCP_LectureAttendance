@@ -1,4 +1,4 @@
-package com.kingartur1000;
+package com.kingartur1000.Data;
 
 import com.kingartur1000.Entities.AttendanceRecord;
 import com.kingartur1000.Entities.Group;

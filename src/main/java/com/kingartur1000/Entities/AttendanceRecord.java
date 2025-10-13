@@ -18,8 +18,14 @@ public class AttendanceRecord {
     }
 
     public void mark(Student s, boolean present) {
+        mark(s, present, true);
+    }
+
+    public void mark(Student s, boolean present, boolean updateCounter) {
         Boolean previousMark = marks.get(s);
         marks.put(s, present);
+
+        if (!updateCounter) return;
 
         // Инкрементируем счётчик только если раньше не было отметки
         // или раньше был отсутствующим, а теперь присутствующий

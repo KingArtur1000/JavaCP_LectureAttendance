@@ -5,7 +5,6 @@ import com.kingartur1000.Entities.GroupTable;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.List;
 
 public class GroupPanel extends GridPanel {
@@ -15,14 +14,10 @@ public class GroupPanel extends GridPanel {
     private AttendancePanel attendancePanel;
     private ReportPanel reportPanel;
 
-    public GroupPanel(StudentPanel studentPanel, AttendancePanel attendancePanel) {
+    public GroupPanel(StudentPanel studentPanel, AttendancePanel attendancePanel, List<Group> groups) {
         super(2, 1);
         this.studentPanel = studentPanel;
         this.attendancePanel = attendancePanel;
-
-        List<Group> groups = new ArrayList<>();
-        groups.add(new Group("10702423"));
-        groups.add(new Group("10702424"));
 
         groupTable = new GroupTable(groups);
         table = new JTable(groupTable);
@@ -70,16 +65,40 @@ public class GroupPanel extends GridPanel {
     private void onDeleteGroup(ActionEvent e) {
         int row = table.getSelectedRow();
         if (row >= 0) {
-            groupTable.removeGroup(row);
-            studentPanel.setGroup(null);
-            attendancePanel.setGroup(null);
-            if (reportPanel != null) {
-                reportPanel.updateGroups(groupTable.getAllGroups());
+            int result = JOptionPane.showConfirmDialog(this,
+                    "Удалить группу и всех её студентов?",
+                    "Подтверждение",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (result == JOptionPane.YES_OPTION) {
+                groupTable.removeGroup(row);
+                studentPanel.setGroup(null);
+                attendancePanel.setGroup(null);
+                if (reportPanel != null) {
+                    reportPanel.updateGroups(groupTable.getAllGroups());
+                }
             }
         }
     }
 
     public List<Group> getAllGroups() {
         return groupTable.getAllGroups();
+    }
+
+    public void reloadGroups(List<Group> groups) {
+        groupTable = new GroupTable(groups);
+        table.setModel(groupTable);
+
+        // Переподключаем обработчик выбора
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int row = table.getSelectedRow();
+                if (row >= 0) {
+                    Group g = groupTable.getGroup(row);
+                    studentPanel.setGroup(g);
+                    attendancePanel.setGroup(g);
+                }
+            }
+        });
     }
 }
