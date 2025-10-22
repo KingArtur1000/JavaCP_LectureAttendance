@@ -26,25 +26,21 @@ public class DataManager {
     private static final String SHEET_ATTENDANCE = "Посещаемость";
 
     /**
-     * Сохраняет все данные в Excel файл
+     * Сохраняет все данные (группы, студентов и посещаемость) в Excel файл.
+     *
+     * @param groups список групп для сохранения
+     * @throws IOException если произошла ошибка записи файла
      */
     public static void saveData(List<Group> groups) throws IOException {
         Workbook workbook = new XSSFWorkbook();
 
-        // Создаём стили
         CellStyle headerStyle = createHeaderStyle(workbook);
         CellStyle dateStyle = createDateStyle(workbook);
 
-        // Сохраняем группы
         saveGroups(workbook, groups, headerStyle);
-
-        // Сохраняем студентов
         saveStudents(workbook, groups, headerStyle);
-
-        // Сохраняем посещаемость
         saveAttendance(workbook, groups, headerStyle, dateStyle);
 
-        // Записываем в файл
         try (FileOutputStream fileOut = new FileOutputStream(FILE_NAME)) {
             workbook.write(fileOut);
         }
@@ -53,39 +49,41 @@ public class DataManager {
     }
 
     /**
-     * Загружает все данные из Excel файла
+     * Загружает все данные (группы, студентов и посещаемость) из Excel файла.
+     *
+     * @return список загруженных групп
+     * @throws IOException если произошла ошибка чтения файла
      */
     public static List<Group> loadData() throws IOException {
         try (FileInputStream fileIn = new FileInputStream(FILE_NAME)) {
             Workbook workbook = new XSSFWorkbook(fileIn);
 
-            // Сначала загружаем группы
             Map<Integer, Group> groupMap = loadGroups(workbook);
-
-            // Затем студентов
             loadStudents(workbook, groupMap);
-
-            // Затем посещаемость
             loadAttendance(workbook, groupMap);
 
             workbook.close();
-
             return new ArrayList<>(groupMap.values());
         }
     }
 
     // ==================== СОХРАНЕНИЕ ====================
 
+    /**
+     * Сохраняет список групп в отдельный лист Excel.
+     *
+     * @param workbook    рабочая книга Excel
+     * @param groups      список групп
+     * @param headerStyle стиль для заголовков
+     */
     private static void saveGroups(Workbook workbook, List<Group> groups, CellStyle headerStyle) {
         Sheet sheet = workbook.createSheet(SHEET_GROUPS);
 
-        // Заголовки
         Row headerRow = sheet.createRow(0);
         createCell(headerRow, 0, "ID", headerStyle);
         createCell(headerRow, 1, "Название группы", headerStyle);
         createCell(headerRow, 2, "Количество студентов", headerStyle);
 
-        // Данные
         int rowNum = 1;
         for (int i = 0; i < groups.size(); i++) {
             Group group = groups.get(i);
@@ -96,16 +94,21 @@ public class DataManager {
             row.createCell(2).setCellValue(group.getStudents().size());
         }
 
-        // Автоширина колонок
         for (int i = 0; i < 3; i++) {
             sheet.autoSizeColumn(i);
         }
     }
 
+    /**
+     * Сохраняет список студентов в отдельный лист Excel.
+     *
+     * @param workbook    рабочая книга Excel
+     * @param groups      список групп
+     * @param headerStyle стиль для заголовков
+     */
     private static void saveStudents(Workbook workbook, List<Group> groups, CellStyle headerStyle) {
         Sheet sheet = workbook.createSheet(SHEET_STUDENTS);
 
-        // Заголовки
         Row headerRow = sheet.createRow(0);
         createCell(headerRow, 0, "ID студента", headerStyle);
         createCell(headerRow, 1, "ФИО", headerStyle);
@@ -113,7 +116,6 @@ public class DataManager {
         createCell(headerRow, 3, "Название группы", headerStyle);
         createCell(headerRow, 4, "Посещений", headerStyle);
 
-        // Данные
         int rowNum = 1;
         int studentId = 0;
 
@@ -130,17 +132,23 @@ public class DataManager {
             }
         }
 
-        // Автоширина колонок
         for (int i = 0; i < 5; i++) {
             sheet.autoSizeColumn(i);
         }
     }
 
+    /**
+     * Сохраняет записи посещаемости в отдельный лист Excel.
+     *
+     * @param workbook    рабочая книга Excel
+     * @param groups      список групп
+     * @param headerStyle стиль для заголовков
+     * @param dateStyle   стиль для отображения дат
+     */
     private static void saveAttendance(Workbook workbook, List<Group> groups,
                                        CellStyle headerStyle, CellStyle dateStyle) {
         Sheet sheet = workbook.createSheet(SHEET_ATTENDANCE);
 
-        // Заголовки
         Row headerRow = sheet.createRow(0);
         createCell(headerRow, 0, "ID группы", headerStyle);
         createCell(headerRow, 1, "Название группы", headerStyle);
@@ -148,7 +156,6 @@ public class DataManager {
         createCell(headerRow, 3, "ФИО студента", headerStyle);
         createCell(headerRow, 4, "Присутствовал", headerStyle);
 
-        // Данные
         int rowNum = 1;
 
         for (int groupId = 0; groupId < groups.size(); groupId++) {
@@ -172,7 +179,6 @@ public class DataManager {
             }
         }
 
-        // Автоширина колонок
         for (int i = 0; i < 5; i++) {
             sheet.autoSizeColumn(i);
         }
@@ -180,13 +186,18 @@ public class DataManager {
 
     // ==================== ЗАГРУЗКА ====================
 
+    /**
+     * Загружает список групп из Excel.
+     *
+     * @param workbook рабочая книга Excel
+     * @return карта групп по их ID
+     */
     private static Map<Integer, Group> loadGroups(Workbook workbook) {
         Map<Integer, Group> groupMap = new HashMap<>();
         Sheet sheet = workbook.getSheet(SHEET_GROUPS);
 
         if (sheet == null) return groupMap;
 
-        // Пропускаем заголовок, начинаем с 1
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
             if (row == null) continue;
@@ -200,6 +211,12 @@ public class DataManager {
         return groupMap;
     }
 
+    /**
+     * Загружает студентов из Excel и добавляет их в соответствующие группы.
+     *
+     * @param workbook рабочая книга Excel
+     * @param groupMap карта групп
+     */
     private static void loadStudents(Workbook workbook, Map<Integer, Group> groupMap) {
         Sheet sheet = workbook.getSheet(SHEET_STUDENTS);
 
@@ -226,12 +243,17 @@ public class DataManager {
         }
     }
 
+    /**
+     * Загружает записи посещаемости из Excel и добавляет их в соответствующие группы.
+     *
+     * @param workbook рабочая книга Excel
+     * @param groupMap карта групп
+     */
     private static void loadAttendance(Workbook workbook, Map<Integer, Group> groupMap) {
         Sheet sheet = workbook.getSheet(SHEET_ATTENDANCE);
 
         if (sheet == null) return;
 
-        // Группируем по группам и датам
         Map<Group, Map<LocalDate, AttendanceRecord>> recordsMap = new HashMap<>();
 
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -248,7 +270,6 @@ public class DataManager {
             Group group = groupMap.get(groupId);
             if (group == null) continue;
 
-            // Находим студента по имени
             Student student = group.getStudents().stream()
                     .filter(s -> s.getFullName().equals(studentName))
                     .findFirst()
@@ -256,7 +277,6 @@ public class DataManager {
 
             if (student == null) continue;
 
-            // Получаем или создаём запись посещаемости
             recordsMap.putIfAbsent(group, new HashMap<>());
             Map<LocalDate, AttendanceRecord> dateRecords = recordsMap.get(group);
 
@@ -267,19 +287,32 @@ public class DataManager {
                 group.addAttendanceRecord(record);
             }
 
-            // Добавляем отметку (без инкремента, т.к. счётчик уже загружен)
             record.getMarks().put(student, present);
         }
     }
 
     // ==================== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ====================
 
+    /**
+     * Создаёт ячейку с заданным текстом и стилем.
+     *
+     * @param row    строка, в которую добавляется ячейка
+     * @param column индекс колонки
+     * @param value  текстовое значение
+     * @param style  стиль ячейки
+     */
     private static void createCell(Row row, int column, String value, CellStyle style) {
         Cell cell = row.createCell(column);
         cell.setCellValue(value);
         cell.setCellStyle(style);
     }
 
+    /**
+     * Создаёт стиль для заголовков таблиц (жирный шрифт, серый фон, рамки).
+     *
+     * @param workbook рабочая книга Excel
+     * @return стиль для заголовков
+     */
     private static CellStyle createHeaderStyle(Workbook workbook) {
         CellStyle style = workbook.createCellStyle();
         Font font = workbook.createFont();
@@ -295,6 +328,12 @@ public class DataManager {
         return style;
     }
 
+    /**
+     * Создаёт стиль для отображения дат в формате dd.MM.yyyy.
+     *
+     * @param workbook рабочая книга Excel
+     * @return стиль для ячеек с датами
+     */
     private static CellStyle createDateStyle(Workbook workbook) {
         CellStyle style = workbook.createCellStyle();
         CreationHelper createHelper = workbook.getCreationHelper();
@@ -303,9 +342,12 @@ public class DataManager {
     }
 
     /**
-     * Проверяет существование файла данных
+     * Проверяет существование файла с данными.
+     *
+     * @return true, если файл существует, иначе false
      */
     public static boolean dataFileExists() {
         return new java.io.File(FILE_NAME).exists();
     }
 }
+

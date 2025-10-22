@@ -91,8 +91,7 @@ public class MainWindow {
     }
 
     private static List<Group> createDefaultGroups() {
-        List<Group> defaultGroups = new java.util.ArrayList<>();
-        return defaultGroups;
+        return new java.util.ArrayList<>();
     }
 
     private static void saveData(JFrame frame) {
