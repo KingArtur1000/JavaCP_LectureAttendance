@@ -5,6 +5,7 @@ import com.kingartur1000.Entities.Student;
 import com.kingartur1000.Entities.StudentTable;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -23,6 +24,14 @@ public class StudentPanel extends GridPanel {
         table = new JTable(studentTable);
         table.getTableHeader().setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
         table.setFont(globalFont);
+        table.setRowHeight(30);
+
+        // Выравнивание по правому краю в колонках -Группа-, -Посещений-
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+        table.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
+        table.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
+
 
         JPanel buttonPanel = new JPanel();
         JButton addBtn = new JButton("Добавить");
@@ -61,6 +70,13 @@ public class StudentPanel extends GridPanel {
         if (g != null) {
             studentTable = new StudentTable(g.getStudents());
             table.setModel(studentTable);
+
+            // Выравнивание по правому краю в колонках -Группа-, -Посещений-
+            DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+            rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+            table.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
+            table.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
+
             groupLabel.setFont(globalFont);
             groupLabel.setText(g.getName() + " (" + g.getStudents().size() + " студентов)");
 
