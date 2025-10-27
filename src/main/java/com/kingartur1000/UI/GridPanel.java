@@ -55,4 +55,18 @@ public class GridPanel extends JPanel {
         gbc.weighty = 1.0;
         add(comp, gbc);
     }
+
+    public void addToGrid(Component comp, int row, int col, int rowSpan, int colSpan,
+                          double weightx, double weighty) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = col;
+        gbc.gridy = row;
+        gbc.gridwidth = colSpan;
+        gbc.gridheight = rowSpan;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = weightx;
+        gbc.weighty = weighty;
+        add(comp, gbc);
+    }
+
 }

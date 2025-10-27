@@ -78,7 +78,26 @@ public class MainWindow {
             tabbedPane.addTab("Посещаемость", attendancePanel);
             tabbedPane.addTab("Отчёты", reportPanel);
 
-            frame.add(tabbedPane);
+            GridPanel bottomGrid = new GridPanel(1, 6);
+            bottomGrid.setFont(globalFont);
+
+            Button exitButton = new Button("Выход");
+            exitButton.setFont(globalFont);
+            exitButton.setBackground(Color.RED);
+            exitButton.setForeground(Color.WHITE);
+            bottomGrid.addToGrid(new JPanel(), 0, 0);
+            bottomGrid.addToGrid(new JPanel(), 0, 1);
+            bottomGrid.addToGrid(new JPanel(), 0, 2);
+            bottomGrid.addToGrid(new JPanel(), 0, 3);
+            bottomGrid.addToGrid(new JPanel(), 0, 4);
+            bottomGrid.addToGrid(exitButton, 0, 5);
+
+            GridPanel mainGrid = new GridPanel(2, 1);
+            mainGrid.setFont(globalFont);
+            mainGrid.addToGrid(tabbedPane, 0, 0, 1, 1, 1, 12);
+            mainGrid.addToGrid(bottomGrid, 1, 0);
+
+            frame.add(mainGrid);
             frame.setLocationRelativeTo(null);
 
             // Обработчики меню

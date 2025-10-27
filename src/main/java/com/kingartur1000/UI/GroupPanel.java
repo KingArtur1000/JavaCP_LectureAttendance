@@ -19,7 +19,7 @@ public class GroupPanel extends GridPanel {
     private ReportPanel reportPanel;
 
     public GroupPanel(StudentPanel studentPanel, AttendancePanel attendancePanel, List<Group> groups) {
-        super(3, 5);
+        super(3, 3);
         this.studentPanel = studentPanel;
         this.attendancePanel = attendancePanel;
 
@@ -31,7 +31,7 @@ public class GroupPanel extends GridPanel {
         table.getColumnModel().getColumn(1).setPreferredWidth(25);
         table.getColumnModel().setColumnMargin(10);
         table.getTableHeader().getColumnModel().setColumnMargin(10);
-        table.setRowMargin(40);
+        table.setRowMargin(30);
         table.getColumnModel().setColumnMargin(20);
         table.setRowHeight(100);
 
@@ -51,12 +51,10 @@ public class GroupPanel extends GridPanel {
         buttonPanel.add(delBtn);
 
         addToGrid(buttonPanel, 0, 0, 1, 5);
-        addToGrid(new JScrollPane(table), 1, 2);
+        addToGrid(new JScrollPane(table), 1, 1, 1, 1, 5, 5);
         addToGrid(new GridPanel(1, 1), 1, 0);
-        addToGrid(new GridPanel(1, 1), 1, 1);
-        addToGrid(new GridPanel(1, 1), 1, 3);
         addToGrid(new GridPanel(1, 1), 1, 4);
-        addToGrid(new GridPanel(2, 1), 1, 1);
+        addToGrid(new GridPanel(1, 1), 2, 0);
 
         addBtn.addActionListener(this::onAddGroup);
         delBtn.addActionListener(this::onDeleteGroup);
