@@ -6,10 +6,13 @@ import com.kingartur1000.Entities.Group;
 import com.kingartur1000.Entities.Student;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+
+import static com.kingartur1000.MainWindow.globalFont;
 
 public class AttendancePanel extends GridPanel {
     private JTable table;
@@ -21,23 +24,37 @@ public class AttendancePanel extends GridPanel {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public AttendancePanel() {
-        super(3, 1);
+        super(3, 3);
 
         JPanel datePanel = new JPanel();
         // Устанавливаем сегодняшнюю дату по умолчанию
         LocalDate today = LocalDate.now();
         dateField = new JTextField(today.format(DATE_FORMATTER), 10);
+        dateField.setFont(globalFont);
         JButton pickBtn = new JButton("Выбрать");
-        datePanel.add(new JLabel("Дата:"));
+        JLabel dateLabel = new JLabel("Дата: ");
+        dateLabel.setFont(globalFont);
+        datePanel.add(dateLabel);
         datePanel.add(dateField);
         datePanel.add(pickBtn);
 
         table = new JTable();
         JButton saveButton = new JButton("Сохранить посещаемость");
+        saveButton.setFont(globalFont);
+        table.setFont(globalFont);
+        table.getTableHeader().setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
+        table.setRowHeight(40);
 
-        addToGrid(datePanel, 0, 0);
-        addToGrid(new JScrollPane(table), 1, 0);
-        addToGrid(saveButton, 2, 0);
+        addToGrid(datePanel, 0, 0, 1, 3);
+        addToGrid(new JPanel(), 1, 0);
+        addToGrid(new JScrollPane(table), 1, 1, 1, 1, 10, 10);
+        addToGrid(new JPanel(), 1, 2);
+
+        GridPanel buttonPanel = new GridPanel(1, 3);
+        buttonPanel.addToGrid(new JPanel(), 0, 0, 1, 1, 2, 1);
+        buttonPanel.addToGrid(saveButton, 0, 1, 1, 1, 1, 1);
+        buttonPanel.addToGrid(new JPanel(), 0, 2, 1, 1, 2, 1);
+        addToGrid(buttonPanel, 2, 0, 1, 3);
 
         pickBtn.addActionListener(this::onPickDate);
         saveButton.addActionListener(this::onSaveAttendance);
@@ -48,6 +65,7 @@ public class AttendancePanel extends GridPanel {
         if (g != null) {
             attendanceTable = new AttendanceTable(g.getStudents());
             table.setModel(attendanceTable);
+            
 
             // Если дата уже выбрана, загружаем данные для этой даты
             if (currentDate != null) {
