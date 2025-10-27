@@ -5,7 +5,7 @@ import java.util.List;
 
 public class GroupTable extends AbstractTableModel {
     private final List<Group> groups;
-    private final String[] columns = {"Название группы", "Количество студентов"};
+    private final String[] columns = {"Номер группы", "Кол-во студ."};
 
     public GroupTable(List<Group> groups) {
         this.groups = groups;

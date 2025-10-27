@@ -5,6 +5,7 @@ import com.kingartur1000.Entities.Group;
 import com.kingartur1000.UI.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -12,20 +13,26 @@ import java.util.List;
 public class MainWindow {
     private static List<Group> groups;
     private static GroupPanel groupPanel;
+    public static Font globalFont = new Font("Arial", Font.PLAIN, 20);
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Курсовой проект Дмитриева А.А. - Учет посещаемости лекционных занятий");
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-            frame.setSize(1000, 600);
+            frame.setSize(960, 600);
 
             // Создаём меню
             JMenuBar menuBar = new JMenuBar();
+            menuBar.setFont(globalFont);
             JMenu fileMenu = new JMenu("Файл");
+            fileMenu.setFont(new Font("Arial", Font.BOLD, 20));
 
             JMenuItem saveItem = new JMenuItem("Сохранить");
+            saveItem.setFont(globalFont);
             JMenuItem loadItem = new JMenuItem("Загрузить");
+            loadItem.setFont(globalFont);
             JMenuItem exitItem = new JMenuItem("Выход");
+            exitItem.setFont(globalFont);
 
             fileMenu.add(saveItem);
             fileMenu.add(loadItem);
@@ -36,6 +43,7 @@ public class MainWindow {
             frame.setJMenuBar(menuBar);
 
             JTabbedPane tabbedPane = new JTabbedPane();
+            tabbedPane.setFont(globalFont);
 
             StudentPanel studentPanel = new StudentPanel();
             AttendancePanel attendancePanel = new AttendancePanel();

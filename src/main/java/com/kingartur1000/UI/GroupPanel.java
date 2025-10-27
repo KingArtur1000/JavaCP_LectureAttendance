@@ -4,8 +4,12 @@ import com.kingartur1000.Entities.Group;
 import com.kingartur1000.Entities.GroupTable;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
+
+import static com.kingartur1000.MainWindow.globalFont;
 
 public class GroupPanel extends GridPanel {
     private JTable table;
@@ -15,22 +19,44 @@ public class GroupPanel extends GridPanel {
     private ReportPanel reportPanel;
 
     public GroupPanel(StudentPanel studentPanel, AttendancePanel attendancePanel, List<Group> groups) {
-        super(2, 1);
+        super(3, 5);
         this.studentPanel = studentPanel;
         this.attendancePanel = attendancePanel;
 
         groupTable = new GroupTable(groups);
         table = new JTable(groupTable);
+        table.setFont(globalFont);
+        table.getTableHeader().setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
+        table.getColumnModel().getColumn(0).setPreferredWidth(250);
+        table.getColumnModel().getColumn(1).setPreferredWidth(25);
+        table.getColumnModel().setColumnMargin(10);
+        table.getTableHeader().getColumnModel().setColumnMargin(10);
+        table.setRowMargin(40);
+        table.getColumnModel().setColumnMargin(20);
+        table.setRowHeight(100);
+
+        // Выравнивание по правому краю в колонке -Кол-во студентов-
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+        table.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
+
 
         JPanel buttonPanel = new JPanel();
         JButton addBtn = new JButton("Добавить группу");
+        addBtn.setFont(globalFont);
         JButton delBtn = new JButton("Удалить группу");
+        delBtn.setFont(globalFont);
 
         buttonPanel.add(addBtn);
         buttonPanel.add(delBtn);
 
-        addToGrid(buttonPanel, 0, 0);
-        addToGrid(new JScrollPane(table), 1, 0);
+        addToGrid(buttonPanel, 0, 0, 1, 5);
+        addToGrid(new JScrollPane(table), 1, 2);
+        addToGrid(new GridPanel(1, 1), 1, 0);
+        addToGrid(new GridPanel(1, 1), 1, 1);
+        addToGrid(new GridPanel(1, 1), 1, 3);
+        addToGrid(new GridPanel(1, 1), 1, 4);
+        addToGrid(new GridPanel(2, 1), 1, 1);
 
         addBtn.addActionListener(this::onAddGroup);
         delBtn.addActionListener(this::onDeleteGroup);
