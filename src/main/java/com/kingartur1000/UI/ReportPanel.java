@@ -5,10 +5,14 @@ import com.kingartur1000.Entities.Student;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import static com.kingartur1000.MainWindow.globalFont;
 
 public class ReportPanel extends GridPanel {
     private JTable table;
@@ -18,12 +22,14 @@ public class ReportPanel extends GridPanel {
     private List<Group> groups;
 
     public ReportPanel(List<Group> groups) {
-        super(3, 1);
+        super(3, 3);
         this.groups = groups;
 
         JPanel sortPanel = new JPanel();
         byName = new JRadioButton("По фамилии");
+        byName.setFont(globalFont);
         byVisits = new JRadioButton("По количеству посещений");
+        byVisits.setFont(globalFont);
         ButtonGroup group = new ButtonGroup();
         group.add(byName);
         group.add(byVisits);
@@ -32,12 +38,33 @@ public class ReportPanel extends GridPanel {
 
         reportTable = new ReportTable(collectStudents());
         table = new JTable(reportTable);
+        table.setRowHeight(40);
+        table.setFont(globalFont);
+        table.getTableHeader().setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
+        table.getColumnModel().setColumnMargin(15);
+        table.getColumnModel().getColumn(0).setPreferredWidth(250);
+        table.getColumnModel().getColumn(1).setPreferredWidth(50);
+        table.getColumnModel().getColumn(2).setPreferredWidth(25);
+
+        // Выравнивание по правому краю в колонке -Кол-во студентов-
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+        table.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
+        table.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
 
         JButton exportButton = new JButton("Экспорт");
+        exportButton.setFont(globalFont);
 
-        addToGrid(sortPanel, 0, 0);
-        addToGrid(new JScrollPane(table), 1, 0);
-        addToGrid(exportButton, 2, 0);
+        addToGrid(sortPanel, 0, 0,1,3,1,1);
+        addToGrid(new JPanel(), 1, 0);
+        addToGrid(new JScrollPane(table), 1, 1,1,1,10,10);
+        addToGrid(new JPanel(), 1, 2);
+
+        GridPanel bottomButtons = new GridPanel(1, 3);
+        bottomButtons.addToGrid(new JPanel(), 1, 0);
+        bottomButtons.addToGrid(exportButton, 1, 1, 1, 1, 0.25, 1);
+        bottomButtons.addToGrid(new JPanel(), 1, 2);
+        addToGrid(bottomButtons, 2, 0, 1, 3);
 
         byName.addActionListener(this::onSort);
         byVisits.addActionListener(this::onSort);

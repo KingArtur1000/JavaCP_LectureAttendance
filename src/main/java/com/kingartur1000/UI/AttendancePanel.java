@@ -44,6 +44,7 @@ public class AttendancePanel extends GridPanel {
         table.setFont(globalFont);
         table.getTableHeader().setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
         table.setRowHeight(40);
+        table.getColumnModel().setColumnMargin(15);
 
         addToGrid(datePanel, 0, 0, 1, 3);
         addToGrid(new JPanel(), 1, 0);
@@ -65,7 +66,7 @@ public class AttendancePanel extends GridPanel {
         if (g != null) {
             attendanceTable = new AttendanceTable(g.getStudents());
             table.setModel(attendanceTable);
-            
+
 
             // Если дата уже выбрана, загружаем данные для этой даты
             if (currentDate != null) {

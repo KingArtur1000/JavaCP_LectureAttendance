@@ -25,7 +25,9 @@ public class MainWindow {
             JMenuBar menuBar = new JMenuBar();
             menuBar.setFont(globalFont);
             JMenu fileMenu = new JMenu("Файл");
+            JMenu whatMenu = new JMenu("?");
             fileMenu.setFont(new Font("Arial", Font.BOLD, 20));
+            whatMenu.setFont(new Font("Arial", Font.BOLD, 20));
 
             JMenuItem saveItem = new JMenuItem("Сохранить");
             saveItem.setFont(globalFont);
@@ -39,7 +41,12 @@ public class MainWindow {
             fileMenu.addSeparator();
             fileMenu.add(exitItem);
 
+            JMenuItem aboutAuthorItem = new JMenuItem("Об авторе");
+            aboutAuthorItem.setFont(globalFont);
+            whatMenu.add(aboutAuthorItem);
+
             menuBar.add(fileMenu);
+            menuBar.add(whatMenu);
             frame.setJMenuBar(menuBar);
 
             JTabbedPane tabbedPane = new JTabbedPane();
