@@ -42,9 +42,9 @@ public class GroupPanel extends GridPanel {
 
 
         JPanel buttonPanel = new JPanel();
-        JButton addBtn = new JButton("Добавить группу");
+        JButton addBtn = new JButton("Добавить");
         addBtn.setFont(globalFont);
-        JButton delBtn = new JButton("Удалить группу");
+        JButton delBtn = new JButton("Удалить");
         delBtn.setFont(globalFont);
 
         buttonPanel.add(addBtn);

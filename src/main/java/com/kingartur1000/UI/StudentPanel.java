@@ -5,7 +5,10 @@ import com.kingartur1000.Entities.Student;
 import com.kingartur1000.Entities.StudentTable;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+
+import static com.kingartur1000.MainWindow.globalFont;
 
 public class StudentPanel extends GridPanel {
     private JTable table;
@@ -14,15 +17,20 @@ public class StudentPanel extends GridPanel {
     private Group currentGroup;
 
     public StudentPanel() {
-        super(3, 1);
+        super(3, 3);
 
         studentTable = new StudentTable(new java.util.ArrayList<>());
         table = new JTable(studentTable);
+        table.getTableHeader().setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
+        table.setFont(globalFont);
 
         JPanel buttonPanel = new JPanel();
         JButton addBtn = new JButton("Добавить");
         JButton delBtn = new JButton("Удалить");
         JButton editBtn = new JButton("Редактировать");
+        addBtn.setFont(globalFont);
+        delBtn.setFont(globalFont);
+        editBtn.setFont(globalFont);
 
         buttonPanel.add(addBtn);
         buttonPanel.add(delBtn);
@@ -31,13 +39,17 @@ public class StudentPanel extends GridPanel {
         // Панель с информацией о группе
         JPanel infoPanel = new JPanel();
         groupLabel = new JLabel("Группа не выбрана");
-        groupLabel.setFont(groupLabel.getFont().deriveFont(14f));
-        infoPanel.add(new JLabel("Выбранная группа: "));
+        groupLabel.setFont(globalFont);
+        JLabel chosenGroupLabel = new JLabel("Выбранная группа: ");
+        chosenGroupLabel.setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
+        infoPanel.add(chosenGroupLabel);
         infoPanel.add(groupLabel);
 
-        addToGrid(buttonPanel, 0, 0);
-        addToGrid(new JScrollPane(table), 1, 0);
-        addToGrid(infoPanel, 2, 0);
+        addToGrid(buttonPanel, 0, 0, 1, 3);
+        addToGrid(new JPanel(), 1, 0, 1, 1, 1, 1);
+        addToGrid(new JScrollPane(table), 1, 1, 1, 1, 10, 10);
+        addToGrid(new JPanel(), 1, 2, 1, 1, 1, 1);
+        addToGrid(infoPanel, 2, 0, 1, 3);
 
         addBtn.addActionListener(this::onAddStudent);
         delBtn.addActionListener(this::onDeleteStudent);
@@ -49,10 +61,13 @@ public class StudentPanel extends GridPanel {
         if (g != null) {
             studentTable = new StudentTable(g.getStudents());
             table.setModel(studentTable);
+            groupLabel.setFont(globalFont);
             groupLabel.setText(g.getName() + " (" + g.getStudents().size() + " студентов)");
+
         } else {
             studentTable = new StudentTable(new java.util.ArrayList<>());
             table.setModel(studentTable);
+            groupLabel.setFont(globalFont);
             groupLabel.setText("Группа не выбрана");
         }
     }
