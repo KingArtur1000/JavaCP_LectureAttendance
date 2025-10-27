@@ -24,7 +24,8 @@ public class StudentPanel extends GridPanel {
         table = new JTable(studentTable);
         table.getTableHeader().setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
         table.setFont(globalFont);
-        table.setRowHeight(30);
+        table.setRowHeight(50);
+        table.getColumnModel().setColumnMargin(15);
 
         // Выравнивание по правому краю в колонках -Группа-, -Посещений-
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
@@ -76,6 +77,11 @@ public class StudentPanel extends GridPanel {
             rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
             table.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
             table.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
+
+
+            table.getColumnModel().getColumn(0).setPreferredWidth(250);
+            table.getColumnModel().getColumn(1).setPreferredWidth(75);
+            table.getColumnModel().getColumn(2).setPreferredWidth(30);
 
             groupLabel.setFont(globalFont);
             groupLabel.setText(g.getName() + " (" + g.getStudents().size() + " студентов)");
