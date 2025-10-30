@@ -91,17 +91,27 @@ public class MainWindow {
         GridPanel bottomGrid = new GridPanel(1, 6);
         bottomGrid.setFont(globalFont);
 
+        // 🔹 Таймер
+        JLabel timerLabel = new JLabel("Время работы: 00:00");
+        timerLabel.setFont(globalFont);
+        timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        bottomGrid.addToGrid(timerLabel, 0, 2); // ставим в центр
+
+        long startTime = System.currentTimeMillis();
+        new javax.swing.Timer(1000, e -> {
+            long elapsed = (System.currentTimeMillis() - startTime) / 1000;
+            long minutes = elapsed / 60;
+            long seconds = elapsed % 60;
+            timerLabel.setText(String.format("Время работы: %02d:%02d", minutes, seconds));
+        }).start();
+
+        // Кнопка выхода
         JButton exitButton = new JButton("Выход");
         exitButton.setFont(globalFont);
         exitButton.setBackground(Color.RED);
         exitButton.setForeground(Color.WHITE);
         exitButton.setToolTipText("Закрывает программу, перед этим предлагает сохранить данные в Excel файл");
         exitButton.addActionListener(e -> exitApplication(frame));
-        bottomGrid.addToGrid(new JPanel(), 0, 0);
-        bottomGrid.addToGrid(new JPanel(), 0, 1);
-        bottomGrid.addToGrid(new JPanel(), 0, 2);
-        bottomGrid.addToGrid(new JPanel(), 0, 3);
-        bottomGrid.addToGrid(new JPanel(), 0, 4);
         bottomGrid.addToGrid(exitButton, 0, 5);
 
         GridPanel mainGrid = new GridPanel(2, 1);
@@ -120,18 +130,18 @@ public class MainWindow {
                 "Автор: Дмитриев Артур Александрович, студент БНТУ, ФИТР, гр. 10702423",
                 "Об авторе", JOptionPane.INFORMATION_MESSAGE));
         aboutProgramItem.addActionListener(e -> JOptionPane.showMessageDialog(frame,
-                "Версия программы: 1.3\n" +
-                        "• 1.3: Добавлен SplashScreen с прогресс‑баром;\n" +
-                        "• 1.2.1: HotFix: устранение бага с удалением и редактированием отсортированных строк;\n" +
-                        "• 1.2: Сортировка по столбцам во всех вкладках;\n" +
-                        "• 1.1: JCalendar для выбора даты;\n" +
-                        "• 1.0: Основной функционал;",
+                "Версия программы: 1.4\n" +
+                        "• 1.4: Добавлен таймер времени работы программы\n" +
+                        "• 1.3: SplashScreen с прогресс‑баром\n" +
+                        "• 1.2: Сортировка по столбцам\n" +
+                        "• 1.1: JCalendar для выбора даты\n" +
+                        "• 1.0: Основной функционал",
                 "О программе", JOptionPane.INFORMATION_MESSAGE));
 
         // закрытие окна
-        frame.addWindowListener(new WindowAdapter() {
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e) {
+            public void windowClosing(java.awt.event.WindowEvent e) {
                 exitApplication(frame);
             }
         });
@@ -147,6 +157,7 @@ public class MainWindow {
 
         frame.setVisible(true);
     }
+
 
     private static List<Group> createDefaultGroups() {
         return new java.util.ArrayList<>();
