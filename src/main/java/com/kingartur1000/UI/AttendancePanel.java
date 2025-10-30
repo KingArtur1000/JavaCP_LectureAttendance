@@ -4,13 +4,16 @@ import com.kingartur1000.Entities.AttendanceRecord;
 import com.kingartur1000.Entities.AttendanceTable;
 import com.kingartur1000.Entities.Group;
 import com.kingartur1000.Entities.Student;
+import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static com.kingartur1000.MainWindow.globalFont;
 
@@ -19,32 +22,37 @@ public class AttendancePanel extends GridPanel {
     private AttendanceTable attendanceTable;
     private Group currentGroup;
     private AttendanceRecord currentRecord;
-    private JTextField dateField;
+    private JDateChooser dateChooser;
     private LocalDate currentDate;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public AttendancePanel() {
         super(3, 3);
 
+        // Панель выбора даты
         JPanel datePanel = new JPanel();
-        // Устанавливаем сегодняшнюю дату по умолчанию
-        LocalDate today = LocalDate.now();
-        dateField = new JTextField(today.format(DATE_FORMATTER), 10);
-        dateField.setFont(globalFont);
-        JButton pickBtn = new JButton("Выбрать");
         JLabel dateLabel = new JLabel("Дата: ");
         dateLabel.setFont(globalFont);
-        datePanel.add(dateLabel);
-        datePanel.add(dateField);
-        datePanel.add(pickBtn);
 
+        dateChooser = new JDateChooser();
+        dateChooser.setDateFormatString("dd.MM.yyyy");
+        dateChooser.setFont(globalFont);
+        dateChooser.setMinimumSize(new Dimension(100, 30));
+        dateChooser.setPreferredSize(new Dimension(150, 40));
+        dateChooser.setDate(new Date()); // сегодняшняя дата по умолчанию
+
+        datePanel.add(dateLabel);
+        datePanel.add(dateChooser);
+
+        // Таблица посещаемости
         table = new JTable();
-        JButton saveButton = new JButton("Сохранить посещаемость");
-        saveButton.setFont(globalFont);
         table.setFont(globalFont);
         table.getTableHeader().setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
         table.setRowHeight(40);
         table.getColumnModel().setColumnMargin(15);
+
+        JButton saveButton = new JButton("Сохранить посещаемость");
+        saveButton.setFont(globalFont);
 
         addToGrid(datePanel, 0, 0, 1, 3);
         addToGrid(new JPanel(), 1, 0);
@@ -57,7 +65,18 @@ public class AttendancePanel extends GridPanel {
         buttonPanel.addToGrid(new JPanel(), 0, 2, 1, 1, 2, 1);
         addToGrid(buttonPanel, 2, 0, 1, 3);
 
-        pickBtn.addActionListener(this::onPickDate);
+        // Автоматическая реакция на выбор даты
+        dateChooser.getDateEditor().addPropertyChangeListener("date", evt -> {
+            Date selectedDate = dateChooser.getDate();
+            if (selectedDate != null) {
+                LocalDate localDate = selectedDate.toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
+                currentDate = localDate;
+                loadAttendanceForDate(localDate);
+            }
+        });
+
         saveButton.addActionListener(this::onSaveAttendance);
     }
 
@@ -66,7 +85,6 @@ public class AttendancePanel extends GridPanel {
         if (g != null) {
             attendanceTable = new AttendanceTable(g.getStudents());
             table.setModel(attendanceTable);
-
 
             // Если дата уже выбрана, загружаем данные для этой даты
             if (currentDate != null) {
@@ -77,17 +95,6 @@ public class AttendancePanel extends GridPanel {
             table.setModel(attendanceTable);
             currentRecord = null;
             currentDate = null;
-        }
-    }
-
-    private void onPickDate(ActionEvent e) {
-        try {
-            LocalDate date = LocalDate.parse(dateField.getText(), DATE_FORMATTER);
-            currentDate = date;
-            loadAttendanceForDate(date);
-            JOptionPane.showMessageDialog(this, "Выбрана дата: " + date.format(DATE_FORMATTER));
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Неверный формат даты. Используйте ДД.ММ.ГГГГ");
         }
     }
 
