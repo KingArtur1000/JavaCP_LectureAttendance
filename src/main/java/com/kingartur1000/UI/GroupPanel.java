@@ -33,9 +33,9 @@ public class GroupPanel extends GridPanel {
         table.getColumnModel().getColumn(1).setPreferredWidth(25);
         table.getColumnModel().setColumnMargin(10);
         table.getTableHeader().getColumnModel().setColumnMargin(10);
-        table.setRowMargin(30);
+        table.setRowMargin(5);
         table.getColumnModel().setColumnMargin(20);
-        table.setRowHeight(100);
+        table.setRowHeight(70);
 
         // Выравнивание по правому краю в колонке -Кол-во студентов-
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();

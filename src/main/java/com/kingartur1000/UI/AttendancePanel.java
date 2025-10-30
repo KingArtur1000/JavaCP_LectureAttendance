@@ -59,9 +59,10 @@ public class AttendancePanel extends GridPanel {
         addToGrid(new JPanel(), 1, 2);
 
         GridPanel buttonPanel = new GridPanel(1, 3);
-        buttonPanel.addToGrid(new JPanel(), 0, 0, 1, 1, 2, 1);
-        buttonPanel.addToGrid(saveButton, 0, 1, 1, 1, 1, 1);
-        buttonPanel.addToGrid(new JPanel(), 0, 2, 1, 1, 2, 1);
+        buttonPanel.addToGrid(new JPanel(), 0, 0);
+        buttonPanel.addToGrid(new JPanel(), 1, 0, 1, 1, 2, 1);
+        buttonPanel.addToGrid(saveButton, 1, 1, 1, 1, 1, 1);
+        buttonPanel.addToGrid(new JPanel(), 1, 2, 1, 1, 2, 1);
         addToGrid(buttonPanel, 2, 0, 1, 3);
 
         // Автоматическая реакция на выбор даты
