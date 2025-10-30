@@ -69,6 +69,9 @@ public class GroupPanel extends GridPanel {
                     Group g = groupTable.getGroup(row);
                     studentPanel.setGroup(g);
                     attendancePanel.setGroup(g);
+                    if (reportPanel != null) {
+                        reportPanel.setGroup(g); // <-- добавляем связь
+                    }
                 }
             }
         });

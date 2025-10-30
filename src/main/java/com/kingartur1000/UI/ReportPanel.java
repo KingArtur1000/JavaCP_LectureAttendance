@@ -20,6 +20,8 @@ public class ReportPanel extends GridPanel {
     private JRadioButton byName;
     private JRadioButton byVisits;
     private List<Group> groups;
+    private Group currentGroup;
+
 
     public ReportPanel(List<Group> groups) {
         super(3, 3);
@@ -79,12 +81,18 @@ public class ReportPanel extends GridPanel {
     }
 
     private List<Student> collectStudents() {
-        List<Student> all = new ArrayList<>();
-        for (Group g : groups) {
-            all.addAll(g.getStudents());
+        if (currentGroup == null) {
+            return new ArrayList<>();
         }
-        return all;
+        return new ArrayList<>(currentGroup.getStudents());
     }
+
+
+    public void setGroup(Group group) {
+        this.currentGroup = group;
+        onSort(null); // пересортировать и обновить таблицу
+    }
+
 
     private void onSort(ActionEvent e) {
         List<Student> all = collectStudents();
