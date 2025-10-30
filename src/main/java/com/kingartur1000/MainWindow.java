@@ -6,7 +6,6 @@ import com.kingartur1000.UI.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -18,143 +17,134 @@ public class MainWindow {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Курсовой проект Дмитриева А.А. - Учет посещаемости лекционных занятий");
-            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-            frame.setSize(960, 600);
+            SplashScreenWindow splash = new SplashScreenWindow();
+            splash.showSplash(
+                    MainWindow::createAndShowMainWindow, // что делать после загрузки
+                    MainWindow::loadInitialData           // сама загрузка
+            );
+        });
+    }
 
-            // Создаём меню
-            JMenuBar menuBar = new JMenuBar();
-            menuBar.setFont(globalFont);
-            JMenu fileMenu = new JMenu("Файл");
-            JMenu whatMenu = new JMenu("?");
-            fileMenu.setFont(new Font("Arial", Font.BOLD, 20));
-            whatMenu.setFont(new Font("Arial", Font.BOLD, 20));
-
-            JMenuItem saveItem = new JMenuItem("Сохранить");
-            saveItem.setFont(globalFont);
-            JMenuItem loadItem = new JMenuItem("Загрузить");
-            loadItem.setFont(globalFont);
-            JMenuItem exitItem = new JMenuItem("Выход");
-            exitItem.setFont(globalFont);
-
-            fileMenu.add(saveItem);
-            fileMenu.add(loadItem);
-            fileMenu.addSeparator();
-            fileMenu.add(exitItem);
-
-            JMenuItem aboutAuthorItem = new JMenuItem("Об авторе");
-            JMenuItem aboutProgramItem = new JMenuItem("О программе");
-
-            aboutAuthorItem.setFont(globalFont);
-            aboutProgramItem.setFont(globalFont);
-            whatMenu.add(aboutAuthorItem);
-            whatMenu.add(aboutProgramItem);
-
-            menuBar.add(fileMenu);
-            menuBar.add(whatMenu);
-            frame.setJMenuBar(menuBar);
-
-            JTabbedPane tabbedPane = new JTabbedPane();
-            tabbedPane.setFont(globalFont);
-
-
-            StudentPanel studentPanel = new StudentPanel();
-            AttendancePanel attendancePanel = new AttendancePanel();
-
-            // Пытаемся загрузить данные при старте
-            if (DataManager.dataFileExists()) {
-                try {
-                    groups = DataManager.loadData();
-                    JOptionPane.showMessageDialog(frame,
-                            "Данные успешно загружены из файла!",
-                            "Загрузка",
-                            JOptionPane.INFORMATION_MESSAGE);
-                } catch (Exception e) {
-                    groups = createDefaultGroups();
-                    JOptionPane.showMessageDialog(frame,
-                            "Ошибка загрузки данных: " + e.getMessage() + "\nСозданы группы по умолчанию.",
-                            "Ошибка",
-                            JOptionPane.WARNING_MESSAGE);
-                }
-            } else {
+    private static void loadInitialData() {
+        if (DataManager.dataFileExists()) {
+            try {
+                groups = DataManager.loadData();
+            } catch (Exception e) {
                 groups = createDefaultGroups();
             }
+        } else {
+            groups = createDefaultGroups();
+        }
+    }
 
-            groupPanel = new GroupPanel(studentPanel, attendancePanel, groups);
-            ReportPanel reportPanel = new ReportPanel(groupPanel.getAllGroups());
+    private static void createAndShowMainWindow() {
+        JFrame frame = new JFrame("Курсовой проект Дмитриева А.А. - Учет посещаемости лекционных занятий");
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.setSize(960, 600);
 
-            // Связываем GroupPanel с ReportPanel для обновлений
-            groupPanel.setReportPanel(reportPanel);
+        // меню
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.setFont(globalFont);
+        JMenu fileMenu = new JMenu("Файл");
+        JMenu whatMenu = new JMenu("?");
+        fileMenu.setFont(new Font("Arial", Font.BOLD, 20));
+        whatMenu.setFont(new Font("Arial", Font.BOLD, 20));
 
-            tabbedPane.addTab("Группы", groupPanel);
-            tabbedPane.addTab("Студенты", studentPanel);
-            tabbedPane.addTab("Посещаемость", attendancePanel);
-            tabbedPane.addTab("Отчёты", reportPanel);
+        JMenuItem saveItem = new JMenuItem("Сохранить");
+        saveItem.setFont(globalFont);
+        JMenuItem loadItem = new JMenuItem("Загрузить");
+        loadItem.setFont(globalFont);
+        JMenuItem exitItem = new JMenuItem("Выход");
+        exitItem.setFont(globalFont);
 
-            GridPanel bottomGrid = new GridPanel(1, 6);
-            bottomGrid.setFont(globalFont);
+        fileMenu.add(saveItem);
+        fileMenu.add(loadItem);
+        fileMenu.addSeparator();
+        fileMenu.add(exitItem);
 
-            Button exitButton = new Button("Выход");
-            exitButton.setFont(globalFont);
-            exitButton.setBackground(Color.RED);
-            exitButton.setForeground(Color.WHITE);
-            exitButton.addActionListener(e -> exitApplication(frame));
-            bottomGrid.addToGrid(new JPanel(), 0, 0);
-            bottomGrid.addToGrid(new JPanel(), 0, 1);
-            bottomGrid.addToGrid(new JPanel(), 0, 2);
-            bottomGrid.addToGrid(new JPanel(), 0, 3);
-            bottomGrid.addToGrid(new JPanel(), 0, 4);
-            bottomGrid.addToGrid(exitButton, 0, 5);
+        JMenuItem aboutAuthorItem = new JMenuItem("Об авторе");
+        JMenuItem aboutProgramItem = new JMenuItem("О программе");
+        aboutAuthorItem.setFont(globalFont);
+        aboutProgramItem.setFont(globalFont);
+        whatMenu.add(aboutAuthorItem);
+        whatMenu.add(aboutProgramItem);
 
-            GridPanel mainGrid = new GridPanel(2, 1);
-            mainGrid.setFont(globalFont);
-            mainGrid.addToGrid(tabbedPane, 0, 0, 1, 1, 1, 12);
-            mainGrid.addToGrid(bottomGrid, 1, 0);
+        menuBar.add(fileMenu);
+        menuBar.add(whatMenu);
+        frame.setJMenuBar(menuBar);
 
-            frame.add(mainGrid);
-            frame.setLocationRelativeTo(null);
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.setFont(globalFont);
 
-            // Обработчики меню
-            saveItem.addActionListener(e -> saveData(frame));
-            loadItem.addActionListener(e -> loadData(frame, studentPanel, attendancePanel, reportPanel));
-            exitItem.addActionListener(e -> exitApplication(frame));
-            aboutAuthorItem.addActionListener(e -> {
-                    JOptionPane.showMessageDialog(frame,
-                    "Автор: Дмитриев Артур Александрович, студент БНТУ, ФИТР, гр. 10702423",
-                    "Об авторе",
-                    JOptionPane.INFORMATION_MESSAGE);});
-            aboutProgramItem.addActionListener(e -> {
-                JOptionPane.showMessageDialog(frame,
-                        "Версия программы: 1.2\n" +
-                                "• 1.2: Добавлена сортировка по столбцам во всех вкладках\n" +
-                                "• 1.1: Добавлен модуль JCalendar для более удобного выбора даты\n" +
-                                "• 1.0: Основной функционал реализован\n",
-                        "О программе",
-                        JOptionPane.INFORMATION_MESSAGE);
-            });
+        StudentPanel studentPanel = new StudentPanel();
+        AttendancePanel attendancePanel = new AttendancePanel();
 
-            // Обработчик закрытия окна
-            frame.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    exitApplication(frame);
-                }
-            });
+        groupPanel = new GroupPanel(studentPanel, attendancePanel, groups);
+        ReportPanel reportPanel = new ReportPanel(groupPanel.getAllGroups());
+        groupPanel.setReportPanel(reportPanel);
 
-            // Обработчик смены вкладок
-            tabbedPane.addChangeListener(e -> {
-                int index = tabbedPane.getSelectedIndex();
-                String title = tabbedPane.getTitleAt(index);
+        tabbedPane.addTab("Группы", groupPanel);
+        tabbedPane.addTab("Студенты", studentPanel);
+        tabbedPane.addTab("Посещаемость", attendancePanel);
+        tabbedPane.addTab("Отчёты", reportPanel);
 
-                if ("Посещаемость".equals(title)) {
-                    // при переходе во вкладку "Посещаемость"
-                    attendancePanel.setTodayDate();
-                }
-            });
+        GridPanel bottomGrid = new GridPanel(1, 6);
+        bottomGrid.setFont(globalFont);
 
+        Button exitButton = new Button("Выход");
+        exitButton.setFont(globalFont);
+        exitButton.setBackground(Color.RED);
+        exitButton.setForeground(Color.WHITE);
+        exitButton.addActionListener(e -> exitApplication(frame));
+        bottomGrid.addToGrid(new JPanel(), 0, 0);
+        bottomGrid.addToGrid(new JPanel(), 0, 1);
+        bottomGrid.addToGrid(new JPanel(), 0, 2);
+        bottomGrid.addToGrid(new JPanel(), 0, 3);
+        bottomGrid.addToGrid(new JPanel(), 0, 4);
+        bottomGrid.addToGrid(exitButton, 0, 5);
 
-            frame.setVisible(true);
+        GridPanel mainGrid = new GridPanel(2, 1);
+        mainGrid.setFont(globalFont);
+        mainGrid.addToGrid(tabbedPane, 0, 0, 1, 1, 1, 12);
+        mainGrid.addToGrid(bottomGrid, 1, 0);
+
+        frame.add(mainGrid);
+        frame.setLocationRelativeTo(null);
+
+        // обработчики меню
+        saveItem.addActionListener(e -> saveData(frame));
+        loadItem.addActionListener(e -> loadData(frame, studentPanel, attendancePanel, reportPanel));
+        exitItem.addActionListener(e -> exitApplication(frame));
+        aboutAuthorItem.addActionListener(e -> JOptionPane.showMessageDialog(frame,
+                "Автор: Дмитриев Артур Александрович, студент БНТУ, ФИТР, гр. 10702423",
+                "Об авторе", JOptionPane.INFORMATION_MESSAGE));
+        aboutProgramItem.addActionListener(e -> JOptionPane.showMessageDialog(frame,
+                "Версия программы: 1.3\n" +
+                        "• 1.3: Добавлен SplashScreen с прогресс‑баром;\n" +
+                        "• 1.2.1: HotFix: устранение бага с удалением и редактированием отсортированных строк;\n" +
+                        "• 1.2: Сортировка по столбцам во всех вкладках;\n" +
+                        "• 1.1: JCalendar для выбора даты;\n" +
+                        "• 1.0: Основной функционал;",
+                "О программе", JOptionPane.INFORMATION_MESSAGE));
+
+        // закрытие окна
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                exitApplication(frame);
+            }
         });
+
+        // смена вкладок
+        tabbedPane.addChangeListener(e -> {
+            int index = tabbedPane.getSelectedIndex();
+            String title = tabbedPane.getTitleAt(index);
+            if ("Посещаемость".equals(title)) {
+                attendancePanel.setTodayDate();
+            }
+        });
+
+        frame.setVisible(true);
     }
 
     private static List<Group> createDefaultGroups() {
@@ -166,13 +156,11 @@ public class MainWindow {
             DataManager.saveData(groupPanel.getAllGroups());
             JOptionPane.showMessageDialog(frame,
                     "Данные успешно сохранены в файл attendance_data.xlsx!",
-                    "Сохранение",
-                    JOptionPane.INFORMATION_MESSAGE);
+                    "Сохранение", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(frame,
                     "Ошибка сохранения данных: " + ex.getMessage(),
-                    "Ошибка",
-                    JOptionPane.ERROR_MESSAGE);
+                    "Ошибка", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
     }
@@ -181,14 +169,11 @@ public class MainWindow {
                                  AttendancePanel attendancePanel, ReportPanel reportPanel) {
         int result = JOptionPane.showConfirmDialog(frame,
                 "Загрузить данные из файла? Текущие несохранённые данные будут потеряны.",
-                "Подтверждение",
-                JOptionPane.YES_NO_OPTION);
+                "Подтверждение", JOptionPane.YES_NO_OPTION);
 
         if (result == JOptionPane.YES_OPTION) {
             try {
                 groups = DataManager.loadData();
-
-                // Обновляем все панели
                 groupPanel.reloadGroups(groups);
                 studentPanel.setGroup(null);
                 attendancePanel.setGroup(null);
@@ -196,13 +181,11 @@ public class MainWindow {
 
                 JOptionPane.showMessageDialog(frame,
                         "Данные успешно загружены из файла!",
-                        "Загрузка",
-                        JOptionPane.INFORMATION_MESSAGE);
+                        "Загрузка", JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame,
                         "Ошибка загрузки данных: " + ex.getMessage(),
-                        "Ошибка",
-                        JOptionPane.ERROR_MESSAGE);
+                        "Ошибка", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
             }
         }
@@ -211,8 +194,7 @@ public class MainWindow {
     private static void exitApplication(JFrame frame) {
         int result = JOptionPane.showConfirmDialog(frame,
                 "Сохранить данные перед выходом?",
-                "Выход",
-                JOptionPane.YES_NO_CANCEL_OPTION);
+                "Выход", JOptionPane.YES_NO_CANCEL_OPTION);
 
         if (result == JOptionPane.YES_OPTION) {
             saveData(frame);
@@ -220,6 +202,6 @@ public class MainWindow {
         } else if (result == JOptionPane.NO_OPTION) {
             System.exit(0);
         }
-        // CANCEL - ничего не делаем
+        // CANCEL — ничего не делаем
     }
 }
