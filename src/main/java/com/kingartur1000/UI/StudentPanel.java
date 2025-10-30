@@ -121,14 +121,13 @@ public class StudentPanel extends GridPanel {
     }
 
     private void onDeleteStudent(ActionEvent e) {
-        int row = table.getSelectedRow();
-        if (row >= 0) {
-            Student student = studentTable.getStudent(row);
+        int viewRow = table.getSelectedRow();
+        if (viewRow >= 0) {
+            int modelRow = table.convertRowIndexToModel(viewRow);
+            Student student = studentTable.getStudent(modelRow);
             if (currentGroup != null) {
                 currentGroup.removeStudent(student);
-                // Уведомляем таблицу об изменении
                 studentTable.refresh();
-                // Обновляем счётчик студентов
                 groupLabel.setText(currentGroup.getName() + " (" + currentGroup.getStudents().size() + " студентов)");
             }
         } else {
@@ -137,9 +136,10 @@ public class StudentPanel extends GridPanel {
     }
 
     private void onEditStudent(ActionEvent e) {
-        int row = table.getSelectedRow();
-        if (row >= 0) {
-            Student s = studentTable.getStudent(row);
+        int viewRow = table.getSelectedRow();
+        if (viewRow >= 0) {
+            int modelRow = table.convertRowIndexToModel(viewRow);
+            Student s = studentTable.getStudent(modelRow);
             String newName = JOptionPane.showInputDialog(this, "Новое ФИО:", s.getFullName());
             if (newName != null && !newName.isBlank()) {
                 s.setFullName(newName);
@@ -149,4 +149,5 @@ public class StudentPanel extends GridPanel {
             JOptionPane.showMessageDialog(this, "Выберите студента для редактирования");
         }
     }
+
 }

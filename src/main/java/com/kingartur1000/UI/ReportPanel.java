@@ -105,25 +105,49 @@ public class ReportPanel extends GridPanel {
     }
 
     private void onExport(ActionEvent e) {
-        StringBuilder sb = new StringBuilder("Отчёт по посещаемости:\n\n");
-        sb.append(String.format("%-30s | %-15s | %s\n", "ФИО", "Группа", "Посещений"));
-        sb.append("-".repeat(60)).append("\n");
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Сохранить отчёт");
+        fileChooser.setSelectedFile(new java.io.File("report.xlsx"));
 
-        for (int i = 0; i < reportTable.getRowCount(); i++) {
-            sb.append(String.format("%-30s | %-15s | %s\n",
-                    reportTable.getValueAt(i, 0),
-                    reportTable.getValueAt(i, 1),
-                    reportTable.getValueAt(i, 2)));
+        int userSelection = fileChooser.showSaveDialog(this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            java.io.File fileToSave = fileChooser.getSelectedFile();
+
+            try (org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook()) {
+                org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Отчёт");
+
+                // Заголовки
+                org.apache.poi.ss.usermodel.Row header = sheet.createRow(0);
+                header.createCell(0).setCellValue("ФИО");
+                header.createCell(1).setCellValue("Группа");
+                header.createCell(2).setCellValue("Посещений");
+
+                // Данные
+                for (int i = 0; i < reportTable.getRowCount(); i++) {
+                    org.apache.poi.ss.usermodel.Row row = sheet.createRow(i + 1);
+                    row.createCell(0).setCellValue(reportTable.getValueAt(i, 0).toString());
+                    row.createCell(1).setCellValue(reportTable.getValueAt(i, 1).toString());
+                    row.createCell(2).setCellValue(Integer.parseInt(reportTable.getValueAt(i, 2).toString()));
+                }
+
+                // Автоширина колонок
+                for (int i = 0; i < 3; i++) {
+                    sheet.autoSizeColumn(i);
+                }
+
+                // Сохраняем файл
+                try (java.io.FileOutputStream out = new java.io.FileOutputStream(fileToSave)) {
+                    workbook.write(out);
+                }
+
+                JOptionPane.showMessageDialog(this, "Отчёт успешно сохранён в " + fileToSave.getAbsolutePath());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Ошибка при сохранении: " + ex.getMessage());
+            }
         }
-
-        JTextArea textArea = new JTextArea(sb.toString());
-        textArea.setEditable(false);
-        textArea.setRows(20);
-        textArea.setColumns(60);
-
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        JOptionPane.showMessageDialog(this, scrollPane, "Отчёт", JOptionPane.INFORMATION_MESSAGE);
     }
+
 
     // Внутренний класс для таблицы отчёта
     private static class ReportTable extends AbstractTableModel {

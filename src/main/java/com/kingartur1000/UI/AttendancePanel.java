@@ -78,6 +78,8 @@ public class AttendancePanel extends GridPanel {
         });
 
         saveButton.addActionListener(this::onSaveAttendance);
+
+        dateChooser.setDate(new Date()); // сегодняшняя дата
     }
 
     public void setGroup(Group g) {
@@ -104,6 +106,20 @@ public class AttendancePanel extends GridPanel {
             currentDate = null;
         }
     }
+
+
+    public void setTodayDate() {
+        Date today = new Date();
+        dateChooser.setDate(today);
+
+        // сразу обновляем currentDate и данные
+        currentDate = today.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+        loadAttendanceForDate(currentDate);
+    }
+
+
 
     private void loadAttendanceForDate(LocalDate date) {
         if (currentGroup == null) {

@@ -57,6 +57,7 @@ public class MainWindow {
             JTabbedPane tabbedPane = new JTabbedPane();
             tabbedPane.setFont(globalFont);
 
+
             StudentPanel studentPanel = new StudentPanel();
             AttendancePanel attendancePanel = new AttendancePanel();
 
@@ -124,7 +125,10 @@ public class MainWindow {
                     JOptionPane.INFORMATION_MESSAGE);});
             aboutProgramItem.addActionListener(e -> {
                 JOptionPane.showMessageDialog(frame,
-                        "Версия программы: 1.1\n• Добавлен модуль JCalendar для более удобного выбора даты",
+                        "Версия программы: 1.2\n" +
+                                "• 1.2: Добавлена сортировка по столбцам во всех вкладках\n" +
+                                "• 1.1: Добавлен модуль JCalendar для более удобного выбора даты\n" +
+                                "• 1.0: Основной функционал реализован\n",
                         "О программе",
                         JOptionPane.INFORMATION_MESSAGE);
             });
@@ -136,6 +140,18 @@ public class MainWindow {
                     exitApplication(frame);
                 }
             });
+
+            // Обработчик смены вкладок
+            tabbedPane.addChangeListener(e -> {
+                int index = tabbedPane.getSelectedIndex();
+                String title = tabbedPane.getTitleAt(index);
+
+                if ("Посещаемость".equals(title)) {
+                    // при переходе во вкладку "Посещаемость"
+                    attendancePanel.setTodayDate();
+                }
+            });
+
 
             frame.setVisible(true);
         });
