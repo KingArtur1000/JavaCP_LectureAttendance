@@ -72,6 +72,13 @@ public class GroupPanel extends GridPanel {
                 }
             }
         });
+
+        // Создаём сортировщик
+        TableRowSorter<GroupTable> sorter = new TableRowSorter<>(groupTable);
+        table.setRowSorter(sorter);
+
+        // Включаем сортировку по первому столбцу (Номер группы) по возрастанию
+        sorter.toggleSortOrder(0);
     }
 
     public void setReportPanel(ReportPanel reportPanel) {
@@ -114,13 +121,6 @@ public class GroupPanel extends GridPanel {
     public void reloadGroups(List<Group> groups) {
         groupTable = new GroupTable(groups);
         table.setModel(groupTable);
-
-        // Создаём сортировщик
-        TableRowSorter<GroupTable> sorter = new TableRowSorter<>(groupTable);
-        table.setRowSorter(sorter);
-
-        // Включаем сортировку по первому столбцу (Номер группы) по возрастанию
-        sorter.toggleSortOrder(0);
 
         // Переподключаем обработчик выбора
         table.getSelectionModel().addListSelectionListener(e -> {
