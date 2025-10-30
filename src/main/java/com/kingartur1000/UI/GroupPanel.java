@@ -42,7 +42,6 @@ public class GroupPanel extends GridPanel {
         rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
         table.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
 
-
         JPanel buttonPanel = new JPanel();
         JButton addBtn = new JButton("Добавить");
         addBtn.setFont(globalFont);
@@ -64,13 +63,14 @@ public class GroupPanel extends GridPanel {
         // Обработчик выбора группы
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                int row = table.getSelectedRow();
-                if (row >= 0) {
-                    Group g = groupTable.getGroup(row);
+                int viewRow = table.getSelectedRow();
+                if (viewRow >= 0) {
+                    int modelRow = table.convertRowIndexToModel(viewRow);
+                    Group g = groupTable.getGroup(modelRow);
                     studentPanel.setGroup(g);
                     attendancePanel.setGroup(g);
                     if (reportPanel != null) {
-                        reportPanel.setGroup(g); // <-- добавляем связь
+                        reportPanel.setGroup(g);
                     }
                 }
             }
@@ -99,15 +99,16 @@ public class GroupPanel extends GridPanel {
     }
 
     private void onDeleteGroup(ActionEvent e) {
-        int row = table.getSelectedRow();
-        if (row >= 0) {
+        int viewRow = table.getSelectedRow();
+        if (viewRow >= 0) {
+            int modelRow = table.convertRowIndexToModel(viewRow);
             int result = JOptionPane.showConfirmDialog(this,
                     "Удалить группу и всех её студентов?",
                     "Подтверждение",
                     JOptionPane.YES_NO_OPTION);
 
             if (result == JOptionPane.YES_OPTION) {
-                groupTable.removeGroup(row);
+                groupTable.removeGroup(modelRow);
                 studentPanel.setGroup(null);
                 attendancePanel.setGroup(null);
                 if (reportPanel != null) {
@@ -128,9 +129,10 @@ public class GroupPanel extends GridPanel {
         // Переподключаем обработчик выбора
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                int row = table.getSelectedRow();
-                if (row >= 0) {
-                    Group g = groupTable.getGroup(row);
+                int viewRow = table.getSelectedRow();
+                if (viewRow >= 0) {
+                    int modelRow = table.convertRowIndexToModel(viewRow);
+                    Group g = groupTable.getGroup(modelRow);
                     studentPanel.setGroup(g);
                     attendancePanel.setGroup(g);
                 }
