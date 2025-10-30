@@ -6,6 +6,7 @@ import com.kingartur1000.Entities.StudentTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -22,6 +23,7 @@ public class StudentPanel extends GridPanel {
 
         studentTable = new StudentTable(new java.util.ArrayList<>());
         table = new JTable(studentTable);
+        table.setAutoCreateRowSorter(true); // включаем сортировку
         table.getTableHeader().setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
         table.setFont(globalFont);
         table.setRowHeight(50);
@@ -71,6 +73,13 @@ public class StudentPanel extends GridPanel {
         if (g != null) {
             studentTable = new StudentTable(g.getStudents());
             table.setModel(studentTable);
+
+            // Создаём сортировщик
+            TableRowSorter<StudentTable> sorter = new TableRowSorter<>(studentTable);
+            table.setRowSorter(sorter);
+
+            // Включаем сортировку по первому столбцу (ФИО) по возрастанию
+            sorter.toggleSortOrder(0);
 
             // Выравнивание по правому краю в колонках -Группа-, -Посещений-
             DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();

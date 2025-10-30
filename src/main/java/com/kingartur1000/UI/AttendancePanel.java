@@ -1,12 +1,10 @@
 package com.kingartur1000.UI;
 
-import com.kingartur1000.Entities.AttendanceRecord;
-import com.kingartur1000.Entities.AttendanceTable;
-import com.kingartur1000.Entities.Group;
-import com.kingartur1000.Entities.Student;
+import com.kingartur1000.Entities.*;
 import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
@@ -47,6 +45,7 @@ public class AttendancePanel extends GridPanel {
         // Таблица посещаемости
         table = new JTable();
         table.setFont(globalFont);
+        table.setAutoCreateRowSorter(true); // включаем сортировку
         table.getTableHeader().setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
         table.setRowHeight(40);
         table.getColumnModel().setColumnMargin(15);
@@ -85,6 +84,13 @@ public class AttendancePanel extends GridPanel {
         if (g != null) {
             attendanceTable = new AttendanceTable(g.getStudents());
             table.setModel(attendanceTable);
+
+            // Создаём сортировщик
+            TableRowSorter<AttendanceTable> sorter = new TableRowSorter<>(attendanceTable);
+            table.setRowSorter(sorter);
+
+            // Включаем сортировку по первому столбцу (ФИО) по возрастанию
+            sorter.toggleSortOrder(0);
 
             // Если дата уже выбрана, загружаем данные для этой даты
             if (currentDate != null) {

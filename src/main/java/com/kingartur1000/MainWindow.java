@@ -6,6 +6,7 @@ import com.kingartur1000.UI.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -42,8 +43,12 @@ public class MainWindow {
             fileMenu.add(exitItem);
 
             JMenuItem aboutAuthorItem = new JMenuItem("Об авторе");
+            JMenuItem aboutProgramItem = new JMenuItem("О программе");
+
             aboutAuthorItem.setFont(globalFont);
+            aboutProgramItem.setFont(globalFont);
             whatMenu.add(aboutAuthorItem);
+            whatMenu.add(aboutProgramItem);
 
             menuBar.add(fileMenu);
             menuBar.add(whatMenu);
@@ -92,6 +97,7 @@ public class MainWindow {
             exitButton.setFont(globalFont);
             exitButton.setBackground(Color.RED);
             exitButton.setForeground(Color.WHITE);
+            exitButton.addActionListener(e -> exitApplication(frame));
             bottomGrid.addToGrid(new JPanel(), 0, 0);
             bottomGrid.addToGrid(new JPanel(), 0, 1);
             bottomGrid.addToGrid(new JPanel(), 0, 2);
@@ -111,6 +117,17 @@ public class MainWindow {
             saveItem.addActionListener(e -> saveData(frame));
             loadItem.addActionListener(e -> loadData(frame, studentPanel, attendancePanel, reportPanel));
             exitItem.addActionListener(e -> exitApplication(frame));
+            aboutAuthorItem.addActionListener(e -> {
+                    JOptionPane.showMessageDialog(frame,
+                    "Автор: Дмитриев Артур Александрович, студент БНТУ, ФИТР, гр. 10702423",
+                    "Об авторе",
+                    JOptionPane.INFORMATION_MESSAGE);});
+            aboutProgramItem.addActionListener(e -> {
+                JOptionPane.showMessageDialog(frame,
+                        "Версия программы: 1.1\n• Добавлен модуль JCalendar для более удобного выбора даты",
+                        "О программе",
+                        JOptionPane.INFORMATION_MESSAGE);
+            });
 
             // Обработчик закрытия окна
             frame.addWindowListener(new WindowAdapter() {

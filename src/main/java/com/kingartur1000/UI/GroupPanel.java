@@ -5,6 +5,7 @@ import com.kingartur1000.Entities.GroupTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -26,6 +27,7 @@ public class GroupPanel extends GridPanel {
         groupTable = new GroupTable(groups);
         table = new JTable(groupTable);
         table.setFont(globalFont);
+        table.setAutoCreateRowSorter(true); // включаем сортировку
         table.getTableHeader().setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
         table.getColumnModel().getColumn(0).setPreferredWidth(250);
         table.getColumnModel().getColumn(1).setPreferredWidth(25);
@@ -112,6 +114,13 @@ public class GroupPanel extends GridPanel {
     public void reloadGroups(List<Group> groups) {
         groupTable = new GroupTable(groups);
         table.setModel(groupTable);
+
+        // Создаём сортировщик
+        TableRowSorter<GroupTable> sorter = new TableRowSorter<>(groupTable);
+        table.setRowSorter(sorter);
+
+        // Включаем сортировку по первому столбцу (Номер группы) по возрастанию
+        sorter.toggleSortOrder(0);
 
         // Переподключаем обработчик выбора
         table.getSelectionModel().addListSelectionListener(e -> {

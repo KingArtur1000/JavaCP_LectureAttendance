@@ -69,6 +69,8 @@ public class ReportPanel extends GridPanel {
         byName.addActionListener(this::onSort);
         byVisits.addActionListener(this::onSort);
         exportButton.addActionListener(this::onExport);
+
+        byName.doClick();
     }
 
     public void updateGroups(List<Group> groups) {
