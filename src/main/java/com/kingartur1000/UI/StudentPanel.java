@@ -38,8 +38,14 @@ public class StudentPanel extends GridPanel {
 
         JPanel buttonPanel = new JPanel();
         JButton addBtn = new JButton("Добавить");
+        addBtn.setBackground(new Color(95, 212, 124));
+        addBtn.setForeground(new Color(255, 255, 255));
         JButton delBtn = new JButton("Удалить");
+        delBtn.setBackground(new Color(216, 53, 53));
+        delBtn.setForeground(new Color(255, 255, 255));
         JButton editBtn = new JButton("Редактировать");
+        editBtn.setBackground(new Color(239, 167, 59));
+        editBtn.setForeground(new Color(255, 255, 255));
         addBtn.setFont(globalFont);
         delBtn.setFont(globalFont);
         editBtn.setFont(globalFont);

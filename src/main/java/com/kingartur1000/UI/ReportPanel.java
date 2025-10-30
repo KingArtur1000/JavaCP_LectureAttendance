@@ -56,6 +56,8 @@ public class ReportPanel extends GridPanel {
 
         JButton exportButton = new JButton("Экспорт");
         exportButton.setFont(globalFont);
+        exportButton.setBackground(new Color(95, 212, 124));
+        exportButton.setForeground(new Color(255, 255, 255));
 
         addToGrid(sortPanel, 0, 0,1,3,1,1);
         addToGrid(new JPanel(), 1, 0);
