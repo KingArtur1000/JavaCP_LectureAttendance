@@ -131,15 +131,27 @@ public class StudentPanel extends GridPanel {
         if (viewRow >= 0) {
             int modelRow = table.convertRowIndexToModel(viewRow);
             Student student = studentTable.getStudent(modelRow);
+
             if (currentGroup != null) {
-                currentGroup.removeStudent(student);
-                studentTable.refresh();
-                groupLabel.setText(currentGroup.getName() + " (" + currentGroup.getStudents().size() + " студентов)");
+                int result = JOptionPane.showConfirmDialog(
+                        this,
+                        "Удалить студента \"" + student.getFullName() + "\"?",
+                        "Подтверждение удаления",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE
+                );
+
+                if (result == JOptionPane.YES_OPTION) {
+                    currentGroup.removeStudent(student);
+                    studentTable.refresh();
+                    groupLabel.setText(currentGroup.getName() + " (" + currentGroup.getStudents().size() + " студентов)");
+                }
             }
         } else {
             JOptionPane.showMessageDialog(this, "Выберите студента для удаления");
         }
     }
+
 
     private void onEditStudent(ActionEvent e) {
         int viewRow = table.getSelectedRow();
