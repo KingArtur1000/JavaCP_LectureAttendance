@@ -38,6 +38,7 @@ public class AttendancePanel extends GridPanel {
         dateChooser.setMinimumSize(new Dimension(150, 30));
         dateChooser.setPreferredSize(new Dimension(200, 40));
         dateChooser.getCalendarButton().setMargin(new Insets(0, 20, 0, 20));
+        dateChooser.getCalendarButton().setToolTipText("Выводит окно в виде календаря, где можно выбрать дату");
         dateChooser.setDate(new Date()); // сегодняшняя дата по умолчанию
 
         datePanel.add(dateLabel);
@@ -55,6 +56,7 @@ public class AttendancePanel extends GridPanel {
         saveButton.setFont(globalFont);
         saveButton.setBackground(new Color(95, 212, 124));
         saveButton.setForeground(new Color(255, 255, 255));
+        saveButton.setToolTipText("Сохраняет во временную память посещаемость студентов выбранной группы на выбранную дату");
 
         addToGrid(datePanel, 0, 0, 1, 3);
         addToGrid(new JPanel(), 1, 0);

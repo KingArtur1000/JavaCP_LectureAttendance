@@ -47,10 +47,12 @@ public class GroupPanel extends GridPanel {
         addBtn.setFont(globalFont);
         addBtn.setBackground(new Color(95, 212, 124));
         addBtn.setForeground(new Color(255, 255, 255));
+        addBtn.setToolTipText("Выводит окно, для добавления группы");
         JButton delBtn = new JButton("Удалить");
         delBtn.setFont(globalFont);
         delBtn.setBackground(new Color(216, 53, 53));
         delBtn.setForeground(new Color(255, 255, 255));
+        delBtn.setToolTipText("Удаляет выбранную группу, требует подтверждения");
 
         buttonPanel.add(addBtn);
         buttonPanel.add(delBtn);

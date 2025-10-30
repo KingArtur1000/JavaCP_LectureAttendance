@@ -58,6 +58,7 @@ public class ReportPanel extends GridPanel {
         exportButton.setFont(globalFont);
         exportButton.setBackground(new Color(95, 212, 124));
         exportButton.setForeground(new Color(255, 255, 255));
+        exportButton.setToolTipText("Выводит окно, где предлагается сохранить посещаемость студентов в файл Excel");
 
         addToGrid(sortPanel, 0, 0,1,3,1,1);
         addToGrid(new JPanel(), 1, 0);
@@ -65,6 +66,7 @@ public class ReportPanel extends GridPanel {
         addToGrid(new JPanel(), 1, 2);
 
         GridPanel bottomButtons = new GridPanel(1, 3);
+        bottomButtons.addToGrid(new JPanel(), 0, 0);
         bottomButtons.addToGrid(new JPanel(), 1, 0);
         bottomButtons.addToGrid(exportButton, 1, 1, 1, 1, 0.25, 1);
         bottomButtons.addToGrid(new JPanel(), 1, 2);

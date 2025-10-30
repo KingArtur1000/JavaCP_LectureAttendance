@@ -40,12 +40,15 @@ public class StudentPanel extends GridPanel {
         JButton addBtn = new JButton("Добавить");
         addBtn.setBackground(new Color(95, 212, 124));
         addBtn.setForeground(new Color(255, 255, 255));
+        addBtn.setToolTipText("Выводит окно, для добавления студента в выбранную группу");
         JButton delBtn = new JButton("Удалить");
         delBtn.setBackground(new Color(216, 53, 53));
         delBtn.setForeground(new Color(255, 255, 255));
+        delBtn.setToolTipText("Удаляет выбранного студента из группы, требует подтверждения");
         JButton editBtn = new JButton("Редактировать");
         editBtn.setBackground(new Color(239, 167, 59));
         editBtn.setForeground(new Color(255, 255, 255));
+        editBtn.setToolTipText("Выводит окно, где можно отредактировать ФИО выбранного студента");
         addBtn.setFont(globalFont);
         delBtn.setFont(globalFont);
         editBtn.setFont(globalFont);

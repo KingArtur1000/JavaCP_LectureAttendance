@@ -91,10 +91,11 @@ public class MainWindow {
         GridPanel bottomGrid = new GridPanel(1, 6);
         bottomGrid.setFont(globalFont);
 
-        Button exitButton = new Button("Выход");
+        JButton exitButton = new JButton("Выход");
         exitButton.setFont(globalFont);
         exitButton.setBackground(Color.RED);
         exitButton.setForeground(Color.WHITE);
+        exitButton.setToolTipText("Закрывает программу, перед этим предлагает сохранить данные в Excel файл");
         exitButton.addActionListener(e -> exitApplication(frame));
         bottomGrid.addToGrid(new JPanel(), 0, 0);
         bottomGrid.addToGrid(new JPanel(), 0, 1);
