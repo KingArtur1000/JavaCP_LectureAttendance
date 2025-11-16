@@ -6,9 +6,9 @@ import com.kingartur1000.UI.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.List;
+
+
 
 public class MainWindow {
     private static List<Group> groups;
@@ -62,7 +62,7 @@ public class MainWindow {
         fileMenu.addSeparator();
         fileMenu.add(exitItem);
 
-        JMenuItem aboutAuthorItem = new JMenuItem("Об авторе");
+        JMenuItem aboutAuthorItem = new JMenuItem("Об авторах");
         JMenuItem aboutProgramItem = new JMenuItem("О программе");
         aboutAuthorItem.setFont(globalFont);
         aboutProgramItem.setFont(globalFont);
@@ -125,12 +125,42 @@ public class MainWindow {
         saveItem.addActionListener(e -> saveData(frame));
         loadItem.addActionListener(e -> loadData(frame, studentPanel, attendancePanel, reportPanel));
         exitItem.addActionListener(e -> exitApplication(frame));
-        aboutAuthorItem.addActionListener(e -> JOptionPane.showMessageDialog(frame,
-                "Авторы:\n" +
-                        "  • Дмитриев Артур Александрович, студент БНТУ, ФИТР, гр. 10702423\n" +
-                        "  • Мосейко Роман Андреевич, студент БНТУ, ФИТР, гр. 10702423",
+        aboutAuthorItem.addActionListener(e -> {
+            // Загружаем изображения из ресурсов
+            ImageIcon arturIcon = new ImageIcon(MainWindow.class.getResource("/Images/Artur.jpg"));
+            ImageIcon romanIcon = new ImageIcon(MainWindow.class.getResource("/Images/Roman.png"));
 
-                "Об авторе", JOptionPane.INFORMATION_MESSAGE));
+            // Масштабируем изображения до 64x64
+            Image scaledArtur = arturIcon.getImage().getScaledInstance(256, 256, Image.SCALE_SMOOTH);
+            Image scaledRoman = romanIcon.getImage().getScaledInstance(256, 256, Image.SCALE_SMOOTH);
+
+            // Создаём иконки из масштабированных изображений
+            ImageIcon arturScaledIcon = new ImageIcon(scaledArtur);
+            ImageIcon romanScaledIcon = new ImageIcon(scaledRoman);
+
+            // Панель с вертикальным расположением
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+            // Панель Артура
+            JPanel arturPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            arturPanel.add(new JLabel(arturScaledIcon));
+            arturPanel.add(new JLabel("<html><b>Дмитриев Артур Александрович</b><br>студент БНТУ, ФИТР, гр. 10702423</html>"));
+
+            // Панель Романа
+            JPanel romanPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            romanPanel.add(new JLabel(romanScaledIcon));
+            romanPanel.add(new JLabel("<html><b>Мосейко Роман Андреевич</b><br>студент БНТУ, ФИТР, гр. 10702423</html>"));
+
+            // Добавляем всё в основную панель
+            panel.add(arturPanel);
+            panel.add(romanPanel);
+
+            // Показываем диалог
+            JOptionPane.showMessageDialog(frame, panel, "Об авторах", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+
         aboutProgramItem.addActionListener(e -> JOptionPane.showMessageDialog(frame,
                 "Версия программы: 1.4\n" +
                         "• 1.4: Добавлен таймер времени работы программы\n" +
