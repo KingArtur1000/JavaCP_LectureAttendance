@@ -65,6 +65,9 @@ public class ReportPanel extends GridPanel {
         tablePanel.add(scrollFixed, BorderLayout.WEST);
         tablePanel.add(scrollMain, BorderLayout.CENTER);
 
+        // поля вокруг таблицы
+        tablePanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+
         groupLabel.setFont(globalFont);
         sortBox.setFont(globalFont);
         sortBox.addActionListener(e -> applySorting());
@@ -83,7 +86,10 @@ public class ReportPanel extends GridPanel {
 
         addToGrid(topPanel, 0, 0, 1, 3);
         addToGrid(tablePanel, 1, 0, 1, 3);
-        addToGrid(exportButton, 2, 2);
+        addToGrid(new JPanel(), 2,0,1,1, 2, 1);
+        addToGrid(exportButton, 2, 1, 1, 1, 1, 1);
+        addToGrid(new JPanel(), 2,2,1,1, 2,1);
+
     }
 
     public void setGroup(Group group) {
