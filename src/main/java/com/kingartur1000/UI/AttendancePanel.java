@@ -23,6 +23,7 @@ public class AttendancePanel extends GridPanel {
     private JDateChooser dateChooser;
     private LocalDate currentDate;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private JLabel groupLabel;
 
     public AttendancePanel() {
         super(3, 3);
@@ -40,6 +41,10 @@ public class AttendancePanel extends GridPanel {
         dateChooser.getCalendarButton().setMargin(new Insets(0, 20, 0, 20));
         dateChooser.getCalendarButton().setToolTipText("Выводит окно в виде календаря, где можно выбрать дату");
         dateChooser.setDate(new Date()); // сегодняшняя дата по умолчанию
+
+        groupLabel = new JLabel("Выбранная группа: " + "                ");
+        groupLabel.setFont(new Font(globalFont.getFontName(), Font.BOLD, 20));
+        datePanel.add(groupLabel);
 
         datePanel.add(dateLabel);
         datePanel.add(dateChooser);
@@ -104,6 +109,9 @@ public class AttendancePanel extends GridPanel {
             if (currentDate != null) {
                 loadAttendanceForDate(currentDate);
             }
+
+            groupLabel.setText("Выбранная группа: " + currentGroup.getName() + "                     ");
+
         } else {
             attendanceTable = new AttendanceTable(new ArrayList<>());
             table.setModel(attendanceTable);
