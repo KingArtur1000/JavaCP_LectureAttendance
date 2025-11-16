@@ -99,7 +99,7 @@ public class GroupPanel extends GridPanel {
         if (name != null && !name.isBlank()) {
             groupTable.addGroup(new Group(name));
             if (reportPanel != null) {
-                reportPanel.updateGroups(groupTable.getAllGroups());
+                //reportPanel.updateGroups(groupTable.getAllGroups());
             }
         }
     }
@@ -118,7 +118,7 @@ public class GroupPanel extends GridPanel {
                 studentPanel.setGroup(null);
                 attendancePanel.setGroup(null);
                 if (reportPanel != null) {
-                    reportPanel.updateGroups(groupTable.getAllGroups());
+                    //reportPanel.updateGroups(groupTable.getAllGroups());
                 }
             }
         }

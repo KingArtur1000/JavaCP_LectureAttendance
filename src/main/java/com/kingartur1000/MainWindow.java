@@ -221,7 +221,6 @@ public class MainWindow {
                 groupPanel.reloadGroups(groups);
                 studentPanel.setGroup(null);
                 attendancePanel.setGroup(null);
-                reportPanel.updateGroups(groups);
 
                 JOptionPane.showMessageDialog(frame,
                         "Данные успешно загружены из файла!",
