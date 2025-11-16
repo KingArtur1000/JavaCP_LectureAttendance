@@ -95,7 +95,7 @@ public class MainWindow {
         JLabel timerLabel = new JLabel("Время работы: 00:00");
         timerLabel.setFont(globalFont);
         timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        bottomGrid.addToGrid(timerLabel, 0, 2); // ставим в центр
+        bottomGrid.addToGrid(timerLabel, 0, 0, 1,1,3,1); // ставим в центр
 
         long startTime = System.currentTimeMillis();
         new javax.swing.Timer(1000, e -> {
@@ -108,11 +108,10 @@ public class MainWindow {
         // Кнопка выхода
         JButton exitButton = new JButton("Выход");
         exitButton.setFont(globalFont);
-        exitButton.setBackground(Color.RED);
-        exitButton.setForeground(Color.WHITE);
+        exitButton.setForeground(Color.BLACK);
         exitButton.setToolTipText("Закрывает программу, перед этим предлагает сохранить данные в Excel файл");
         exitButton.addActionListener(e -> exitApplication(frame));
-        bottomGrid.addToGrid(exitButton, 0, 5);
+        bottomGrid.addToGrid(exitButton, 0, 1,1,1,1,1);
 
         GridPanel mainGrid = new GridPanel(2, 1);
         mainGrid.setFont(globalFont);
@@ -127,7 +126,10 @@ public class MainWindow {
         loadItem.addActionListener(e -> loadData(frame, studentPanel, attendancePanel, reportPanel));
         exitItem.addActionListener(e -> exitApplication(frame));
         aboutAuthorItem.addActionListener(e -> JOptionPane.showMessageDialog(frame,
-                "Автор: Дмитриев Артур Александрович, студент БНТУ, ФИТР, гр. 10702423",
+                "Авторы:\n" +
+                        "  • Дмитриев Артур Александрович, студент БНТУ, ФИТР, гр. 10702423\n" +
+                        "  • Мосейко Роман Андреевич, студент БНТУ, ФИТР, гр. 10702423",
+
                 "Об авторе", JOptionPane.INFORMATION_MESSAGE));
         aboutProgramItem.addActionListener(e -> JOptionPane.showMessageDialog(frame,
                 "Версия программы: 1.4\n" +
