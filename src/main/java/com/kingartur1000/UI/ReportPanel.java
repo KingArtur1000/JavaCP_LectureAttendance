@@ -3,9 +3,11 @@ package com.kingartur1000.UI;
 import com.kingartur1000.Entities.*;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,6 +26,10 @@ public class ReportPanel extends GridPanel {
     private AttendanceDatesModel datesModel;
     private JLabel groupLabel = new JLabel("Выбранная группа: —");
     private JButton exportButton = new JButton("Экспорт");
+    private JComboBox<String> sortBox = new JComboBox<>(new String[] {
+            "По ФИО", "По количеству посещений"
+    });
+    private Group currentGroup;
 
     public ReportPanel(List<Group> groups) {
         super(3, 3);
@@ -31,70 +37,94 @@ public class ReportPanel extends GridPanel {
         fixedModel = new FixedColumnModel();
         datesModel = new AttendanceDatesModel();
 
-        // Таблица ФИО (фиксированная)
         fixedTable = new JTable(fixedModel);
         fixedTable.setRowHeight(30);
         fixedTable.setFont(globalFont);
         fixedTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         fixedTable.getTableHeader().setFont(globalFont);
-        TableColumn col = fixedTable.getColumnModel().getColumn(0);
-        col.setPreferredWidth(180); // компактнее
+        fixedTable.getColumnModel().getColumn(0).setPreferredWidth(250);
 
-        // Таблица дат
         mainTable = new JTable(datesModel);
         mainTable.setRowHeight(30);
         mainTable.setFont(globalFont);
         mainTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         mainTable.getTableHeader().setFont(globalFont);
 
-        // Скроллы
         JScrollPane scrollFixed = new JScrollPane(fixedTable,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollFixed.setPreferredSize(new Dimension(180, scrollFixed.getPreferredSize().height));
+                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollFixed.setPreferredSize(new Dimension(250, scrollFixed.getPreferredSize().height));
 
         JScrollPane scrollMain = new JScrollPane(mainTable,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        // синхронизация вертикального скролла
         scrollFixed.getVerticalScrollBar().setModel(scrollMain.getVerticalScrollBar().getModel());
 
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.add(scrollFixed, BorderLayout.WEST);
         tablePanel.add(scrollMain, BorderLayout.CENTER);
 
-        // Верхняя панель
         groupLabel.setFont(globalFont);
+        sortBox.setFont(globalFont);
+        sortBox.addActionListener(e -> applySorting());
+
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.add(groupLabel);
+        JLabel sortLabel = new JLabel("Сортировка:");
+        sortLabel.setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
+        topPanel.add(sortLabel);
+        topPanel.add(sortBox);
 
-        // Кнопка экспорта
         exportButton.setFont(globalFont);
         exportButton.setBackground(new Color(95, 212, 124));
         exportButton.setForeground(Color.WHITE);
         exportButton.addActionListener(this::onExport);
 
-        // Сборка интерфейса
         addToGrid(topPanel, 0, 0, 1, 3);
         addToGrid(tablePanel, 1, 0, 1, 3);
         addToGrid(exportButton, 2, 2);
     }
 
     public void setGroup(Group group) {
-        groupLabel.setText("Выбранная группа: " + group.getName());
+        this.currentGroup = group;
+        groupLabel.setText("Выбранная группа: " + group.getName() + "                  ");
+        applySorting();
+    }
 
-        // Дефолтная сортировка по ФИО на уровне данных (затрагивает обе таблицы)
-        group.getStudents().sort(Comparator.comparing(Student::getFullName, String.CASE_INSENSITIVE_ORDER));
+    private void applySorting() {
+        if (currentGroup == null) return;
 
-        fixedModel.setGroup(group);
-        datesModel.setGroup(group);
+        List<Student> students = currentGroup.getStudents();
 
-        // Ширина колонок дат — после загрузки модели
+        switch (sortBox.getSelectedIndex()) {
+            case 0: // По ФИО
+                students.sort(Comparator.comparing(Student::getFullName, String.CASE_INSENSITIVE_ORDER));
+                break;
+            case 1: // По количеству посещений
+                students.sort(Comparator.comparingInt(s -> {
+                    int count = 0;
+                    for (AttendanceRecord r : currentGroup.getAttendanceRecords()) {
+                        if (r.isPresent(s)) count++;
+                    }
+                    return -count; // по убыванию
+                }));
+                break;
+        }
+
+        fixedModel.setGroup(currentGroup);
+        fixedTable.getColumnModel().getColumn(0).setPreferredWidth(248);
+        datesModel.setGroup(currentGroup);
+
         if (mainTable.getColumnModel().getColumnCount() > 0) {
-            for (int i = 0; i < mainTable.getColumnModel().getColumnCount(); i++) {
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+            for (int i = 0; i < mainTable.getColumnCount(); i++) {
                 mainTable.getColumnModel().getColumn(i).setPreferredWidth(150);
+                mainTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
             }
+
         }
     }
 
