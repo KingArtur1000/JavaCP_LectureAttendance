@@ -21,6 +21,7 @@ public class ReportPanel extends GridPanel {
     private JRadioButton byVisits;
     private List<Group> groups;
     private Group currentGroup;
+    private JLabel groupLabel = new JLabel();
 
 
     public ReportPanel(List<Group> groups) {
@@ -35,6 +36,9 @@ public class ReportPanel extends GridPanel {
         ButtonGroup group = new ButtonGroup();
         group.add(byName);
         group.add(byVisits);
+        groupLabel.setText("Выбранная группа: "+ "                 ");
+        groupLabel.setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
+        sortPanel.add(groupLabel);
         sortPanel.add(byName);
         sortPanel.add(byVisits);
 
@@ -94,6 +98,7 @@ public class ReportPanel extends GridPanel {
 
     public void setGroup(Group group) {
         this.currentGroup = group;
+        groupLabel.setText("Выбранная группа: " + currentGroup.getName() + "                 ");
         onSort(null); // пересортировать и обновить таблицу
     }
 
