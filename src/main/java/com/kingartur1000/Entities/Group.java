@@ -53,4 +53,9 @@ public class Group {
         }
         return null;
     }
+
+    // метод для удаления записи посещаемости
+    public void removeAttendanceRecord(AttendanceRecord record) {
+        attendanceRecords.remove(record);
+    }
 }

@@ -182,10 +182,17 @@ public class MainWindow {
         tabbedPane.addChangeListener(e -> {
             int index = tabbedPane.getSelectedIndex();
             String title = tabbedPane.getTitleAt(index);
+
             if ("Посещаемость".equals(title)) {
                 attendancePanel.setTodayDate();
+            } else if ("Отчёты".equals(title)) {
+                // 👉 обновляем ReportPanel
+                if (attendancePanel.getCurrentGroup() != null) {
+                    reportPanel.setGroup(attendancePanel.getCurrentGroup());
+                }
             }
         });
+
 
         frame.setVisible(true);
     }

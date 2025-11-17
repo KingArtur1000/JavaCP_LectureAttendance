@@ -1,5 +1,6 @@
 package com.kingartur1000.UI;
 
+import com.kingartur1000.Data.DataManager;
 import com.kingartur1000.Entities.*;
 import com.toedter.calendar.JDateChooser;
 
@@ -7,6 +8,8 @@ import javax.swing.*;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -92,6 +95,8 @@ public class AttendancePanel extends GridPanel {
         dateChooser.setDate(new Date()); // сегодняшняя дата
     }
 
+    public Group getCurrentGroup() {return currentGroup;}
+
     public void setGroup(Group g) {
         this.currentGroup = g;
         if (g != null) {
@@ -162,6 +167,7 @@ public class AttendancePanel extends GridPanel {
             return;
         }
 
+        int presentCount = 0;
         StringBuilder sb = new StringBuilder("Посещаемость для группы " + currentGroup.getName() +
                 " на дату " + currentDate.format(DATE_FORMATTER) + ":\n\n");
 
@@ -169,6 +175,7 @@ public class AttendancePanel extends GridPanel {
             Student s = attendanceTable.getStudent(i);
             boolean present = attendanceTable.isPresent(s);
             currentRecord.mark(s, present);
+            if (present) presentCount++;
             sb.append(s.getFullName())
                     .append(" — ")
                     .append(present ? "Присутствовал" : "Отсутствовал")
@@ -177,6 +184,20 @@ public class AttendancePanel extends GridPanel {
                     .append(")\n");
         }
 
+        // 👉 Если никого не было — удаляем запись
+        if (presentCount == 0) {
+            currentGroup.removeAttendanceRecord(currentRecord);
+            currentRecord = null;
+            JOptionPane.showMessageDialog(this, "Никого не было — лекция удалена из отчётов");
+            return;
+        }
+
         JOptionPane.showMessageDialog(this, sb.toString());
     }
+
+
+
+
+
+
 }
