@@ -31,20 +31,24 @@ public class StudentTable extends AbstractTableModel {
         Student s = students.get(rowIndex);
         return switch (columnIndex) {
             case 0 -> s.getFullName();
-            case 1 -> s.getGroupName();
-            case 2 -> s.getAttendanceCount();
+            case 1 -> s.getGroup() != null ? s.getGroup().getName() : "";
+            case 2 -> {
+                int totalLectures = s.getGroup() != null ? s.getGroup().getAttendanceRecords().size() : 0;
+                int attended = s.getAttendanceCount();
+                if (totalLectures == 0) {
+                    yield "0 (0%)";
+                } else {
+                    int percent = (int) Math.round((attended * 100.0) / totalLectures);
+                    yield attended + " (" + percent + "%)";
+                }
+            }
             default -> null;
         };
     }
 
-    public void addStudent(Student s) {
-        students.add(s);
-        fireTableRowsInserted(students.size() - 1, students.size() - 1);
-    }
-
-    public void removeStudent(int index) {
-        students.remove(index);
-        fireTableRowsDeleted(index, index);
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return String.class;
     }
 
     public Student getStudent(int index) {
