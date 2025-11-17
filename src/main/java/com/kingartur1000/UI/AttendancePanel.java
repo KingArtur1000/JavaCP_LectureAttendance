@@ -1,6 +1,5 @@
 package com.kingartur1000.UI;
 
-import com.kingartur1000.Data.DataManager;
 import com.kingartur1000.Entities.*;
 import com.toedter.calendar.JDateChooser;
 
@@ -8,8 +7,6 @@ import javax.swing.*;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -55,7 +52,7 @@ public class AttendancePanel extends GridPanel {
         // Таблица посещаемости
         table = new JTable();
         table.setFont(globalFont);
-        table.setAutoCreateRowSorter(true); // включаем сортировку
+        table.setAutoCreateRowSorter(true);
         table.getTableHeader().setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
         table.setRowHeight(40);
         table.getColumnModel().setColumnMargin(15);
@@ -63,7 +60,7 @@ public class AttendancePanel extends GridPanel {
         JButton saveButton = new JButton("Сохранить посещаемость");
         saveButton.setFont(globalFont);
         saveButton.setBackground(new Color(95, 212, 124));
-        saveButton.setForeground(new Color(255, 255, 255));
+        saveButton.setForeground(Color.WHITE);
         saveButton.setToolTipText("Сохраняет во временную память посещаемость студентов выбранной группы на выбранную дату");
 
         addToGrid(datePanel, 0, 0, 1, 3);
@@ -91,11 +88,7 @@ public class AttendancePanel extends GridPanel {
         });
 
         saveButton.addActionListener(this::onSaveAttendance);
-
-        dateChooser.setDate(new Date()); // сегодняшняя дата
     }
-
-    public Group getCurrentGroup() {return currentGroup;}
 
     public void setGroup(Group g) {
         this.currentGroup = g;
@@ -103,20 +96,15 @@ public class AttendancePanel extends GridPanel {
             attendanceTable = new AttendanceTable(g.getStudents());
             table.setModel(attendanceTable);
 
-            // Создаём сортировщик
             TableRowSorter<AttendanceTable> sorter = new TableRowSorter<>(attendanceTable);
             table.setRowSorter(sorter);
-
-            // Включаем сортировку по первому столбцу (ФИО) по возрастанию
             sorter.toggleSortOrder(0);
 
-            // Если дата уже выбрана, загружаем данные для этой даты
             if (currentDate != null) {
                 loadAttendanceForDate(currentDate);
             }
 
             groupLabel.setText("Выбранная группа: " + currentGroup.getName() + "                     ");
-
         } else {
             attendanceTable = new AttendanceTable(new ArrayList<>());
             table.setModel(attendanceTable);
@@ -125,35 +113,29 @@ public class AttendancePanel extends GridPanel {
         }
     }
 
+    public Group getCurrentGroup() {
+        return currentGroup;
+    }
+
 
     public void setTodayDate() {
         Date today = new Date();
         dateChooser.setDate(today);
-
-        // сразу обновляем currentDate и данные
-        currentDate = today.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
+        currentDate = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         loadAttendanceForDate(currentDate);
     }
 
-
-
     private void loadAttendanceForDate(LocalDate date) {
-        if (currentGroup == null) {
-            return;
-        }
+        if (currentGroup == null) return;
 
-        // Ищем существующую запись для этой даты
         currentRecord = currentGroup.getAttendanceRecordByDate(date);
 
         if (currentRecord == null) {
-            // Создаём новую запись
-            currentRecord = new AttendanceRecord(date);
-            currentGroup.addAttendanceRecord(currentRecord);
+            // ⚠️ Не создаём новую запись автоматически
+            attendanceTable.clear();
+            return;
         }
 
-        // Загружаем данные в таблицу
         attendanceTable.loadFromRecord(currentRecord);
     }
 
@@ -162,9 +144,15 @@ public class AttendancePanel extends GridPanel {
             JOptionPane.showMessageDialog(this, "Сначала выберите группу");
             return;
         }
-        if (currentRecord == null || currentDate == null) {
+        if (currentDate == null) {
             JOptionPane.showMessageDialog(this, "Сначала выберите дату");
             return;
+        }
+
+        // 👉 создаём запись только при сохранении
+        if (currentRecord == null) {
+            currentRecord = new AttendanceRecord(currentDate);
+            currentGroup.addAttendanceRecord(currentRecord);
         }
 
         int presentCount = 0;
@@ -184,7 +172,6 @@ public class AttendancePanel extends GridPanel {
                     .append(")\n");
         }
 
-        // 👉 Если никого не было — удаляем запись
         if (presentCount == 0) {
             currentGroup.removeAttendanceRecord(currentRecord);
             currentRecord = null;
@@ -194,10 +181,4 @@ public class AttendancePanel extends GridPanel {
 
         JOptionPane.showMessageDialog(this, sb.toString());
     }
-
-
-
-
-
-
 }

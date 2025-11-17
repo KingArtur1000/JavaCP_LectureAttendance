@@ -79,6 +79,16 @@ public class AttendanceTable extends AbstractTableModel {
         return marks.getOrDefault(s, false);
     }
 
+
+    // Очистка таблицы: все студенты отмечены как отсутствующие
+    public void clear() {
+        for (Student s : students) {
+            marks.put(s, Boolean.FALSE);
+        }
+        fireTableDataChanged();
+    }
+
+
     public Student getStudent(int index) {
         return students.get(index);
     }
