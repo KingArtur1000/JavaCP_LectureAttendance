@@ -33,7 +33,7 @@ public class AttendanceDatesModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return dates.size(); // Только даты
+        return dates.size();
     }
 
     @Override
@@ -46,7 +46,20 @@ public class AttendanceDatesModel extends AbstractTableModel {
         Student s = students.get(rowIndex);
         LocalDate date = dates.get(columnIndex);
         AttendanceRecord record = records.get(date);
-        return (record != null && !record.isPresent(s)) ? "•" : "";
+
+        if (record == null) return "";
+
+        AttendanceTable.AttendanceMark mark = record.getMark(s);
+        return mark; // возвращаем сам статус, а не текст
+    }
+
+    // вспомогательные методы для рендерера
+    public AttendanceRecord getRecordAt(int columnIndex) {
+        LocalDate date = dates.get(columnIndex);
+        return records.get(date);
+    }
+
+    public Student getStudentAt(int rowIndex) {
+        return students.get(rowIndex);
     }
 }
-

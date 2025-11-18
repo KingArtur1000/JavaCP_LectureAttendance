@@ -104,18 +104,14 @@ public class ReportPanel extends GridPanel {
         List<Student> students = currentGroup.getStudents();
 
         switch (sortBox.getSelectedIndex()) {
-            case 0: // По ФИО
-                students.sort(Comparator.comparing(Student::getFullName, String.CASE_INSENSITIVE_ORDER));
-                break;
-            case 1: // По количеству посещений
-                students.sort(Comparator.comparingInt(s -> {
-                    int count = 0;
-                    for (AttendanceRecord r : currentGroup.getAttendanceRecords()) {
-                        if (r.isPresent(s)) count++;
-                    }
-                    return -count; // по убыванию
-                }));
-                break;
+            case 0 -> students.sort(Comparator.comparing(Student::getFullName, String.CASE_INSENSITIVE_ORDER));
+            case 1 -> students.sort(Comparator.comparingInt(s -> {
+                int count = 0;
+                for (AttendanceRecord r : currentGroup.getAttendanceRecords()) {
+                    if (r.isPresent(s)) count++;
+                }
+                return -count;
+            }));
         }
 
         fixedModel.setGroup(currentGroup);
@@ -123,16 +119,38 @@ public class ReportPanel extends GridPanel {
         datesModel.setGroup(currentGroup);
 
         if (mainTable.getColumnModel().getColumnCount() > 0) {
-            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
             for (int i = 0; i < mainTable.getColumnCount(); i++) {
                 mainTable.getColumnModel().getColumn(i).setPreferredWidth(150);
-                mainTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-            }
 
+                mainTable.getColumnModel().getColumn(i).setCellRenderer(new DefaultTableCellRenderer() {
+                    @Override
+                    public void setValue(Object value) {
+                        if (value instanceof AttendanceTable.AttendanceMark mark) {
+                            switch (mark) {
+                                case ABSENT -> {
+                                    setText("•");
+                                    setForeground(Color.BLACK);
+                                }
+                                case LATE -> {
+                                    setText("•");
+                                    setForeground(Color.RED);
+                                }
+                                case PRESENT -> {
+                                    setText("");
+                                    setForeground(Color.BLACK);
+                                }
+                            }
+                        } else {
+                            setText("");
+                            setForeground(Color.BLACK);
+                        }
+                        setHorizontalAlignment(SwingConstants.CENTER);
+                    }
+                });
+            }
         }
     }
+
 
     private void onExport(ActionEvent e) {
         JFileChooser chooser = new JFileChooser();
