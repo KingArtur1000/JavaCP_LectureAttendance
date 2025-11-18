@@ -24,11 +24,15 @@ public class AttendanceTable extends AbstractTableModel {
 
     public void loadFromRecord(AttendanceRecord record) {
         for (Student s : students) {
-            boolean present = record != null && record.isPresent(s);
-            marks.put(s, present ? AttendanceMark.PRESENT : AttendanceMark.ABSENT);
+            AttendanceMark mark = AttendanceMark.ABSENT;
+            if (record != null) {
+                mark = record.getMark(s); // сохраняем точный статус: PRESENT / LATE / ABSENT
+            }
+            marks.put(s, mark);
         }
         fireTableDataChanged();
     }
+
 
     public void clear() {
         for (Student s : students) {
