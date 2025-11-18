@@ -49,7 +49,7 @@ public class AttendanceReportTableModel extends AbstractTableModel {
 
         LocalDate date = dates.get(columnIndex - 1);
         AttendanceRecord record = records.get(date);
-        return (record != null && !record.isPresent(s)) ? "-" : "";
+        return (record != null && !record.isPresent(s)) ? "•" : "";
     }
 }
 
