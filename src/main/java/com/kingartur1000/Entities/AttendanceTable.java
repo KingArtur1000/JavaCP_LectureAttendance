@@ -6,29 +6,53 @@ import java.util.List;
 import java.util.Map;
 
 public class AttendanceTable extends AbstractTableModel {
+    public enum AttendanceMark {
+        ABSENT, PRESENT, LATE
+    }
+
     private final List<Student> students;
-    private final String[] columns = {"ФИО", "Присутствовал"};
-    private final Map<Student, Boolean> marks;
+    private final String[] columns = {"ФИО", "Статус"};
+    private final Map<Student, AttendanceMark> marks;
 
     public AttendanceTable(List<Student> students) {
         this.students = students;
         this.marks = new HashMap<>();
         for (Student s : students) {
-            marks.put(s, Boolean.FALSE);
+            marks.put(s, AttendanceMark.ABSENT);
         }
     }
 
     public void loadFromRecord(AttendanceRecord record) {
-        if (record == null) {
-            for (Student s : students) {
-                marks.put(s, Boolean.FALSE);
-            }
-        } else {
-            for (Student s : students) {
-                marks.put(s, record.isPresent(s));
-            }
+        for (Student s : students) {
+            boolean present = record != null && record.isPresent(s);
+            marks.put(s, present ? AttendanceMark.PRESENT : AttendanceMark.ABSENT);
         }
         fireTableDataChanged();
+    }
+
+    public void clear() {
+        for (Student s : students) {
+            marks.put(s, AttendanceMark.ABSENT);
+        }
+        fireTableDataChanged();
+    }
+
+    public AttendanceMark getMark(Student s) {
+        return marks.getOrDefault(s, AttendanceMark.ABSENT);
+    }
+
+    public void setMark(Student s, AttendanceMark mark) {
+        marks.put(s, mark);
+        fireTableDataChanged();
+    }
+
+    public boolean isPresent(Student s) {
+        AttendanceMark mark = getMark(s);
+        return mark == AttendanceMark.PRESENT || mark == AttendanceMark.LATE;
+    }
+
+    public Student getStudent(int index) {
+        return students.get(index);
     }
 
     @Override
@@ -48,48 +72,17 @@ public class AttendanceTable extends AbstractTableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        return columnIndex == 1 ? Boolean.class : String.class;
+        return columnIndex == 1 ? AttendanceMark.class : String.class;
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         Student s = students.get(rowIndex);
-        return switch (columnIndex) {
-            case 0 -> s.getFullName();
-            case 1 -> marks.getOrDefault(s, false);
-            default -> null;
-        };
+        return columnIndex == 0 ? s.getFullName() : getMark(s);
     }
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex == 1;
-    }
-
-    @Override
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (columnIndex == 1 && aValue instanceof Boolean present) {
-            Student s = students.get(rowIndex);
-            marks.put(s, present);
-            fireTableCellUpdated(rowIndex, columnIndex);
-        }
-    }
-
-    public boolean isPresent(Student s) {
-        return marks.getOrDefault(s, false);
-    }
-
-
-    // Очистка таблицы: все студенты отмечены как отсутствующие
-    public void clear() {
-        for (Student s : students) {
-            marks.put(s, Boolean.FALSE);
-        }
-        fireTableDataChanged();
-    }
-
-
-    public Student getStudent(int index) {
-        return students.get(index);
+        return false;
     }
 }
