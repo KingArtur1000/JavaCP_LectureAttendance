@@ -128,11 +128,11 @@ public class MainWindow {
         aboutAuthorItem.addActionListener(e -> {
             // Загружаем изображения из ресурсов
             ImageIcon arturIcon = new ImageIcon(MainWindow.class.getResource("/Images/Artur.jpg"));
-            ImageIcon romanIcon = new ImageIcon(MainWindow.class.getResource("/Images/Roman.png"));
+            ImageIcon romanIcon = new ImageIcon(MainWindow.class.getResource("/Images/Roman.jpg"));
 
             // Масштабируем изображения до 64x64
             Image scaledArtur = arturIcon.getImage().getScaledInstance(256, 256, Image.SCALE_SMOOTH);
-            Image scaledRoman = romanIcon.getImage().getScaledInstance(256, 256, Image.SCALE_SMOOTH);
+            Image scaledRoman = romanIcon.getImage().getScaledInstance(256, 328, Image.SCALE_SMOOTH);
 
             // Создаём иконки из масштабированных изображений
             ImageIcon arturScaledIcon = new ImageIcon(scaledArtur);
