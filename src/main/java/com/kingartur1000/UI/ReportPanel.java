@@ -4,7 +4,6 @@ import com.kingartur1000.Entities.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.Color;
 import java.awt.Font;
@@ -65,7 +64,6 @@ public class ReportPanel extends GridPanel {
         tablePanel.add(scrollFixed, BorderLayout.WEST);
         tablePanel.add(scrollMain, BorderLayout.CENTER);
 
-        // поля вокруг таблицы
         tablePanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
         groupLabel.setFont(globalFont);
@@ -89,7 +87,6 @@ public class ReportPanel extends GridPanel {
         addToGrid(new JPanel(), 2,0,1,1, 2, 1);
         addToGrid(exportButton, 2, 1, 1, 1, 1, 1);
         addToGrid(new JPanel(), 2,2,1,1, 2,1);
-
     }
 
     public void setGroup(Group group) {
@@ -151,7 +148,6 @@ public class ReportPanel extends GridPanel {
         }
     }
 
-
     private void onExport(ActionEvent e) {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Сохранить отчёт");
@@ -173,7 +169,16 @@ public class ReportPanel extends GridPanel {
                     excelRow.createCell(0).setCellValue(fixedModel.getValueAt(row, 0).toString());
                     for (int col = 0; col < datesModel.getColumnCount(); col++) {
                         Object value = datesModel.getValueAt(row, col);
-                        excelRow.createCell(col + 1).setCellValue(value != null ? value.toString() : "");
+                        if (value instanceof AttendanceTable.AttendanceMark mark) {
+                            String text = switch (mark) {
+                                case ABSENT -> "Отсутствовал";
+                                case LATE -> "Опоздал"; // в Excel просто точка, цвет не сохраняем
+                                case PRESENT -> "";
+                            };
+                            excelRow.createCell(col + 1).setCellValue(text);
+                        } else {
+                            excelRow.createCell(col + 1).setCellValue("");
+                        }
                     }
                 }
 

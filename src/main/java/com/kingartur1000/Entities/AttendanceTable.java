@@ -50,10 +50,6 @@ public class AttendanceTable extends AbstractTableModel {
         fireTableDataChanged();
     }
 
-    public boolean isPresent(Student s) {
-        AttendanceMark mark = getMark(s);
-        return mark == AttendanceMark.PRESENT || mark == AttendanceMark.LATE;
-    }
 
     public Student getStudent(int index) {
         return students.get(index);

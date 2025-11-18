@@ -2,10 +2,7 @@ package com.kingartur1000.Entities;
 
 import javax.swing.table.AbstractTableModel;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AttendanceReportTableModel extends AbstractTableModel {
     private List<Student> students = new ArrayList<>();
@@ -49,8 +46,19 @@ public class AttendanceReportTableModel extends AbstractTableModel {
 
         LocalDate date = dates.get(columnIndex - 1);
         AttendanceRecord record = records.get(date);
-        return (record != null && !record.isPresent(s)) ? "•" : "";
+        if (record == null) return "";
+
+        // Возвращаем сам статус, чтобы рендерер мог покрасить точку
+        return record.getMark(s);
+    }
+
+    // Вспомогательные методы для рендерера
+    public AttendanceRecord getRecordAt(int columnIndex) {
+        LocalDate date = dates.get(columnIndex - 1);
+        return records.get(date);
+    }
+
+    public Student getStudentAt(int rowIndex) {
+        return students.get(rowIndex);
     }
 }
-
-
