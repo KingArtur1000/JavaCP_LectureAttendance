@@ -26,7 +26,7 @@ import java.awt.*;
  * В результате получится таблица 3x3, где некоторые кнопки занимают
  * несколько ячеек.
  *
- * @author Артур
+ * @author Артур и Роман
  * @version 1.0
  */
 public class GridPanel extends JPanel {

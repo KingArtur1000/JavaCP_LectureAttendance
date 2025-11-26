@@ -5,6 +5,7 @@ import com.kingartur1000.Entities.AttendanceTable.AttendanceMark;
 import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -29,13 +30,12 @@ public class AttendancePanel extends GridPanel {
     public AttendancePanel() {
         super(3, 3);
 
-        // Панель выбора даты
+        // 🔹 Панель выбора даты
         JPanel datePanel = new JPanel();
         JLabel dateLabel = new JLabel("Дата: ");
         dateLabel.setFont(globalFont);
 
-        JDateChooser dateChooser = new JDateChooser();
-        this.dateChooser = dateChooser;
+        dateChooser = new JDateChooser();
         dateChooser.setDateFormatString("dd.MM.yyyy");
         dateChooser.setFont(globalFont);
         dateChooser.setPreferredSize(new Dimension(200, 40));
@@ -47,21 +47,33 @@ public class AttendancePanel extends GridPanel {
         datePanel.add(dateLabel);
         datePanel.add(dateChooser);
 
-        // Таблица посещаемости
+        // 🔹 Таблица посещаемости
         table = new JTable();
         table.setFont(globalFont);
-        table.setRowHeight(40);
+        table.setRowHeight(70);
         table.getTableHeader().setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
 
+        // 🔹 Обёртка таблицы с отступами
+        JPanel tableWrapper = new JPanel(new BorderLayout());
+        tableWrapper.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setPreferredSize(new Dimension(300, 400));
+        tableWrapper.add(scrollPane, BorderLayout.CENTER);
+
+        // 🔹 Кнопка сохранения
         JButton saveButton = new JButton("Сохранить посещаемость");
         saveButton.setFont(globalFont);
         saveButton.setBackground(new Color(95, 212, 124));
         saveButton.setForeground(Color.WHITE);
 
+        // 🔹 Добавление в сетку
         addToGrid(datePanel, 0, 0, 1, 3);
-        addToGrid(new JScrollPane(table), 1, 1, 1, 1, 10, 10);
+        addToGrid(new GridPanel(1, 1), 1, 0); // отступ слева
+        addToGrid(tableWrapper, 1, 1, 1, 1, 1, 1);
+        addToGrid(new GridPanel(1, 1), 1, 2); // отступ справа
         addToGrid(saveButton, 2, 1, 1, 1);
 
+        // 🔹 Обработчик смены даты
         dateChooser.getDateEditor().addPropertyChangeListener("date", evt -> {
             Date selectedDate = dateChooser.getDate();
             if (selectedDate != null) {
@@ -83,8 +95,14 @@ public class AttendancePanel extends GridPanel {
             table.setRowSorter(sorter);
             sorter.toggleSortOrder(0);
 
+            // 🔹 Столбец ФИО
+            table.getColumnModel().getColumn(0).setPreferredWidth(250);
+
+            // 🔹 Столбец Статус
+            table.getColumnModel().getColumn(1).setPreferredWidth(50);
             table.getColumnModel().getColumn(1).setCellRenderer(new AttendanceMarkRenderer());
 
+            // 🔹 Обработка кликов
             table.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mousePressed(java.awt.event.MouseEvent e) {
@@ -160,7 +178,6 @@ public class AttendancePanel extends GridPanel {
             Student s = attendanceTable.getStudent(i);
             AttendanceMark mark = attendanceTable.getMark(s);
 
-            // Передаём точный статус, чтобы учёт посещений работал корректно
             currentRecord.mark(s, mark);
 
             boolean present = (mark == AttendanceMark.PRESENT || mark == AttendanceMark.LATE);

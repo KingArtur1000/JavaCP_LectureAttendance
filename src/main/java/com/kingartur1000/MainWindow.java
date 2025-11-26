@@ -38,7 +38,7 @@ public class MainWindow {
     }
 
     private static void createAndShowMainWindow() {
-        JFrame frame = new JFrame("Курсовой проект Дмитриева А.А. - Учет посещаемости лекционных занятий");
+        JFrame frame = new JFrame("Курсовой проект Дмитриева А.А. и Мосейко Р.А. - Учет посещаемости лекционных занятий");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setSize(960, 600);
 
@@ -130,11 +130,11 @@ public class MainWindow {
             ImageIcon arturIcon = new ImageIcon(MainWindow.class.getResource("/Images/Artur.jpg"));
             ImageIcon romanIcon = new ImageIcon(MainWindow.class.getResource("/Images/Roman.jpg"));
 
-            // Масштабируем изображения до 64x64
+            // Масштабируем изображения
             Image scaledArtur = arturIcon.getImage().getScaledInstance(256, 256, Image.SCALE_SMOOTH);
             Image scaledRoman = romanIcon.getImage().getScaledInstance(256, 328, Image.SCALE_SMOOTH);
 
-            // Создаём иконки из масштабированных изображений
+            // Создаём иконки
             ImageIcon arturScaledIcon = new ImageIcon(scaledArtur);
             ImageIcon romanScaledIcon = new ImageIcon(scaledRoman);
 
@@ -144,31 +144,83 @@ public class MainWindow {
 
             // Панель Артура
             JPanel arturPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            arturPanel.add(new JLabel(arturScaledIcon));
+            JLabel arturLabel = new JLabel(arturScaledIcon);
+            arturPanel.add(arturLabel);
             arturPanel.add(new JLabel("<html><b>Дмитриев Артур Александрович</b><br>студент БНТУ, ФИТР, гр. 10702423</html>"));
 
             // Панель Романа
             JPanel romanPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            romanPanel.add(new JLabel(romanScaledIcon));
+            JLabel romanLabel = new JLabel(romanScaledIcon);
+            romanPanel.add(romanLabel);
             romanPanel.add(new JLabel("<html><b>Мосейко Роман Андреевич</b><br>студент БНТУ, ФИТР, гр. 10702423</html>"));
 
             // Добавляем всё в основную панель
             panel.add(arturPanel);
             panel.add(romanPanel);
 
+            // 👉 Добавляем обработчики клика по картинкам
+            arturLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent e) {
+                    playSound("/Sounds/artursound.wav"); // звук для Артура
+                }
+            });
+
+            romanLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent e) {
+                    playSound("/Sounds/romansound.wav"); // звук для Романа
+                }
+            });
+
             // Показываем диалог
             JOptionPane.showMessageDialog(frame, panel, "Об авторах", JOptionPane.INFORMATION_MESSAGE);
         });
 
 
-        aboutProgramItem.addActionListener(e -> JOptionPane.showMessageDialog(frame,
-                "Версия программы: 1.4\n" +
-                        "• 1.4: Добавлен таймер времени работы программы\n" +
-                        "• 1.3: SplashScreen с прогресс‑баром\n" +
-                        "• 1.2: Сортировка по столбцам\n" +
-                        "• 1.1: JCalendar для выбора даты\n" +
-                        "• 1.0: Основной функционал",
-                "О программе", JOptionPane.INFORMATION_MESSAGE));
+
+        aboutProgramItem.addActionListener(e -> {
+            // Загружаем картинку котов-программистов
+            ImageIcon catsIcon = new ImageIcon(MainWindow.class.getResource("/Images/cats_programmers.jpg"));
+            Image scaledCats = catsIcon.getImage().getScaledInstance(600, 375, Image.SCALE_SMOOTH);
+            ImageIcon catsScaledIcon = new ImageIcon(scaledCats);
+
+            // Панель с вертикальным расположением
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+            // Картинка сверху
+            JLabel catsLabel = new JLabel(catsScaledIcon);
+            catsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panel.add(catsLabel);
+
+            // Текст снизу
+            JTextArea textArea = new JTextArea(
+                    "Версия программы: 1.8\n" +
+                            "--------------------------------------\n" +
+                            " Истрия изменений:\n" +
+                            "• 1.8: Переделаны отчёты и посещаемость\n" +
+                            "• 1.7: Переделаны границы столбоцов\n" +
+                            "• 1.6: Переделана панель о программе\n" +
+                            "• 1.5: Добавлено звуковое сопровождение\n" +
+                            "• 1.4: Добавлен таймер времени работы программы\n" +
+                            "• 1.3: SplashScreen с прогресс-баром\n" +
+                            "• 1.2: Сортировка по столбцам\n" +
+                            "• 1.1: JCalendar для выбора даты\n" +
+                            "• 1.0: Основной функционал"
+            );
+            textArea.setFont(globalFont);
+            textArea.setEditable(false);
+            textArea.setOpaque(false);
+            textArea.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            panel.add(Box.createRigidArea(new Dimension(0, 10))); // отступ
+            panel.add(textArea);
+
+            // Показываем диалог
+            JOptionPane.showMessageDialog(frame, panel, "О программе", JOptionPane.INFORMATION_MESSAGE);
+        });
+
 
         // закрытие окна
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -254,4 +306,21 @@ public class MainWindow {
         }
         // CANCEL — ничего не делаем
     }
+
+    private static void playSound(String soundPath) {
+        try {
+            java.net.URL url = MainWindow.class.getResource(soundPath);
+            if (url == null) {
+                System.err.println("Не найден файл: " + soundPath);
+                return;
+            }
+            javax.sound.sampled.AudioInputStream audioIn = javax.sound.sampled.AudioSystem.getAudioInputStream(url);
+            javax.sound.sampled.Clip clip = javax.sound.sampled.AudioSystem.getClip();
+            clip.open(audioIn);
+            clip.start();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }

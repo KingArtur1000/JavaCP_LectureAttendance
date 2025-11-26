@@ -50,8 +50,8 @@ public class ReportPanel extends GridPanel {
         mainTable.getTableHeader().setFont(globalFont);
 
         JScrollPane scrollFixed = new JScrollPane(fixedTable,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+                JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollFixed.setPreferredSize(new Dimension(250, scrollFixed.getPreferredSize().height));
 
         JScrollPane scrollMain = new JScrollPane(mainTable,
@@ -111,13 +111,32 @@ public class ReportPanel extends GridPanel {
             }));
         }
 
+        // Обновляем модели
         fixedModel.setGroup(currentGroup);
-        fixedTable.getColumnModel().getColumn(0).setPreferredWidth(248);
         datesModel.setGroup(currentGroup);
 
+        // Автоматическая ширина столбца ФИО
+        int maxWidth = 0;
+        FontMetrics fm = fixedTable.getFontMetrics(globalFont);
+        for (int i = 0; i < fixedModel.getRowCount(); i++) {
+            String name = fixedModel.getValueAt(i, 0).toString();
+            int width = fm.stringWidth(name);
+            if (width > maxWidth) maxWidth = width;
+        }
+        int finalWidth = Math.max(maxWidth + 40, 250); // минимум 250, чтобы не было слишком узко
+        fixedTable.getColumnModel().getColumn(0).setPreferredWidth(finalWidth);
+
+        // Обновляем ширину scrollFixed
+        JScrollPane scrollPane = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, fixedTable);
+        if (scrollPane != null) {
+            scrollPane.setPreferredSize(new Dimension(finalWidth, scrollPane.getPreferredSize().height));
+            scrollPane.revalidate();
+        }
+
+        // Устанавливаем ширину и рендеринг для столбцов с датами
         if (mainTable.getColumnModel().getColumnCount() > 0) {
             for (int i = 0; i < mainTable.getColumnCount(); i++) {
-                mainTable.getColumnModel().getColumn(i).setPreferredWidth(150);
+                mainTable.getColumnModel().getColumn(i).setPreferredWidth(90);
 
                 mainTable.getColumnModel().getColumn(i).setCellRenderer(new DefaultTableCellRenderer() {
                     @Override
