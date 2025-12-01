@@ -12,18 +12,31 @@ import java.awt.event.ActionEvent;
 
 import static com.kingartur1000.MainWindow.globalFont;
 
+/**
+ * Панель для управления студентами выбранной группы.
+ * <p>Содержит таблицу студентов, кнопки добавления/удаления/редактирования и информацию о группе.</p>
+ */
 public class StudentPanel extends GridPanel {
+    /** Таблица студентов */
     private JTable table;
+    /** Модель таблицы студентов */
     private StudentTable studentTable;
+    /** Метка с названием выбранной группы */
     private JLabel groupLabel;
+    /** Текущая выбранная группа */
     private Group currentGroup;
 
+    /**
+     * Конструктор панели студентов.
+     * <p>Создаёт таблицу, кнопки управления и панель информации о группе.</p>
+     */
     public StudentPanel() {
-        super(3, 3);
+        super(3, 3); // сетка 3 на 3
 
+        // Инициализация пустой таблицы
         studentTable = new StudentTable(new java.util.ArrayList<>());
         table = new JTable(studentTable);
-        table.setAutoCreateRowSorter(true); // включаем сортировку
+        table.setAutoCreateRowSorter(true); // включаем сортировку по умолчанию
         table.getTableHeader().setFont(new Font(globalFont.getFontName(), Font.BOLD, globalFont.getSize()));
         table.setFont(globalFont);
         table.setRowHeight(50);
@@ -35,20 +48,23 @@ public class StudentPanel extends GridPanel {
         table.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
         table.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
 
-
+        // Панель кнопок управления
         JPanel buttonPanel = new JPanel();
         JButton addBtn = new JButton("Добавить");
         addBtn.setBackground(new Color(95, 212, 124));
         addBtn.setForeground(new Color(255, 255, 255));
         addBtn.setToolTipText("Выводит окно, для добавления студента в выбранную группу");
+
         JButton delBtn = new JButton("Удалить");
         delBtn.setBackground(new Color(216, 53, 53));
         delBtn.setForeground(new Color(255, 255, 255));
         delBtn.setToolTipText("Удаляет выбранного студента из группы, требует подтверждения");
+
         JButton editBtn = new JButton("Редактировать");
         editBtn.setBackground(new Color(239, 167, 59));
         editBtn.setForeground(new Color(255, 255, 255));
         editBtn.setToolTipText("Выводит окно, где можно отредактировать ФИО выбранного студента");
+
         addBtn.setFont(globalFont);
         delBtn.setFont(globalFont);
         editBtn.setFont(globalFont);
@@ -66,24 +82,30 @@ public class StudentPanel extends GridPanel {
         infoPanel.add(chosenGroupLabel);
         infoPanel.add(groupLabel);
 
+        // Размещение элементов в сетке
         addToGrid(buttonPanel, 0, 0, 1, 3);
         addToGrid(new JPanel(), 1, 0, 1, 1, 1, 1);
         addToGrid(new JScrollPane(table), 1, 1, 1, 1, 10, 10);
         addToGrid(new JPanel(), 1, 2, 1, 1, 1, 1);
         addToGrid(infoPanel, 2, 0, 1, 3);
 
+        // Обработчики кнопок
         addBtn.addActionListener(this::onAddStudent);
         delBtn.addActionListener(this::onDeleteStudent);
         editBtn.addActionListener(this::onEditStudent);
     }
 
+    /**
+     * Установить текущую группу для панели.
+     * <p>Загружает студентов группы в таблицу, включает сортировку и обновляет метку.</p>
+     */
     public void setGroup(Group g) {
         this.currentGroup = g;
         if (g != null) {
             studentTable = new StudentTable(g.getStudents());
             table.setModel(studentTable);
 
-            // Создаём сортировщик
+            // Создаём сортировщик и включаем сортировку по ФИО
             TableRowSorter<StudentTable> sorter = new TableRowSorter<>(studentTable);
             table.setRowSorter(sorter);
 
@@ -96,7 +118,7 @@ public class StudentPanel extends GridPanel {
             table.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
             table.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
 
-
+            // Настройка ширины колонок
             table.getColumnModel().getColumn(0).setPreferredWidth(250);
             table.getColumnModel().getColumn(1).setPreferredWidth(75);
             table.getColumnModel().getColumn(2).setPreferredWidth(30);
@@ -112,6 +134,10 @@ public class StudentPanel extends GridPanel {
         }
     }
 
+    /**
+     * Добавить нового студента в текущую группу.
+     * <p>Открывает диалог для ввода ФИО, добавляет студента и обновляет таблицу.</p>
+     */
     private void onAddStudent(ActionEvent e) {
         if (currentGroup == null) {
             JOptionPane.showMessageDialog(this, "Сначала выберите группу");
@@ -129,6 +155,10 @@ public class StudentPanel extends GridPanel {
         }
     }
 
+    /**
+     * Удалить выбранного студента из группы.
+     * <p>Требует подтверждения, обновляет таблицу и счётчик студентов.</p>
+     */
     private void onDeleteStudent(ActionEvent e) {
         int viewRow = table.getSelectedRow();
         if (viewRow >= 0) {
@@ -155,7 +185,10 @@ public class StudentPanel extends GridPanel {
         }
     }
 
-
+    /**
+     * Редактировать ФИО выбранного студента.
+     * <p>Открывает диалог, сохраняет новое имя и обновляет таблицу.</p>
+     */
     private void onEditStudent(ActionEvent e) {
         int viewRow = table.getSelectedRow();
         if (viewRow >= 0) {
@@ -170,5 +203,4 @@ public class StudentPanel extends GridPanel {
             JOptionPane.showMessageDialog(this, "Выберите студента для редактирования");
         }
     }
-
 }

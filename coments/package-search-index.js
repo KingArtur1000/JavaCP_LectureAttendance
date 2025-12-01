@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.kingartur1000"},{"l":"com.kingartur1000.Data"},{"l":"com.kingartur1000.Entities"},{"l":"com.kingartur1000.UI"}];updateSearchResults();

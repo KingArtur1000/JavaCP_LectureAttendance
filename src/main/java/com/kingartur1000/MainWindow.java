@@ -8,12 +8,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-
-
+/**
+ * Главный класс приложения.
+ * <p>Создаёт основное окно, вкладки, меню и управляет загрузкой/сохранением данных.</p>
+ */
 public class MainWindow {
+    /** Список всех групп */
     private static List<Group> groups;
+    /** Панель управления группами */
     private static GroupPanel groupPanel;
+    /** Глобальный шрифт для интерфейса */
     public static Font globalFont = new Font("Arial", Font.PLAIN, 20);
+
+    /**
+     * Точка входа в программу.
+     * <p>Запускает SplashScreen, затем создаёт главное окно.</p>
+     */
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -25,6 +35,10 @@ public class MainWindow {
         });
     }
 
+    /**
+     * Загрузка начальных данных.
+     * <p>Если файл данных существует — загружаем, иначе создаём пустой список групп.</p>
+     */
     private static void loadInitialData() {
         if (DataManager.dataFileExists()) {
             try {
@@ -37,12 +51,16 @@ public class MainWindow {
         }
     }
 
+    /**
+     * Создание и отображение главного окна приложения.
+     * <p>Настраивает меню, вкладки, таймер и обработчики.</p>
+     */
     private static void createAndShowMainWindow() {
         JFrame frame = new JFrame("Курсовой проект Дмитриева А.А. и Мосейко Р.А. - Учет посещаемости лекционных занятий");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setSize(960, 600);
 
-        // меню
+        // Меню
         JMenuBar menuBar = new JMenuBar();
         menuBar.setFont(globalFont);
         JMenu fileMenu = new JMenu("Файл");
@@ -73,6 +91,7 @@ public class MainWindow {
         menuBar.add(whatMenu);
         frame.setJMenuBar(menuBar);
 
+        // Вкладки
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.setFont(globalFont);
 
@@ -88,10 +107,11 @@ public class MainWindow {
         tabbedPane.addTab("Посещаемость", attendancePanel);
         tabbedPane.addTab("Отчёты", reportPanel);
 
+        // Нижняя панель с таймером и кнопкой выхода
         GridPanel bottomGrid = new GridPanel(1, 6);
         bottomGrid.setFont(globalFont);
 
-        // 🔹 Таймер
+        // Таймер работы программы
         JLabel timerLabel = new JLabel("Время работы: 00:00");
         timerLabel.setFont(globalFont);
         timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -113,6 +133,7 @@ public class MainWindow {
         exitButton.addActionListener(e -> exitApplication(frame));
         bottomGrid.addToGrid(exitButton, 0, 1,1,1,1,1);
 
+        // Основная сетка
         GridPanel mainGrid = new GridPanel(2, 1);
         mainGrid.setFont(globalFont);
         mainGrid.addToGrid(tabbedPane, 0, 0, 1, 1, 1, 12);
@@ -121,10 +142,12 @@ public class MainWindow {
         frame.add(mainGrid);
         frame.setLocationRelativeTo(null);
 
-        // обработчики меню
+        // Обработчики меню
         saveItem.addActionListener(e -> saveData(frame));
         loadItem.addActionListener(e -> loadData(frame, studentPanel, attendancePanel, reportPanel));
         exitItem.addActionListener(e -> exitApplication(frame));
+
+        // Диалог "Об авторах"
         aboutAuthorItem.addActionListener(e -> {
             // Загружаем изображения из ресурсов
             ImageIcon arturIcon = new ImageIcon(MainWindow.class.getResource("/Images/Artur.jpg"));
@@ -158,7 +181,7 @@ public class MainWindow {
             panel.add(arturPanel);
             panel.add(romanPanel);
 
-            // 👉 Добавляем обработчики клика по картинкам
+            // Добавляем обработчики клика по картинкам
             arturLabel.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -177,8 +200,7 @@ public class MainWindow {
             JOptionPane.showMessageDialog(frame, panel, "Об авторах", JOptionPane.INFORMATION_MESSAGE);
         });
 
-
-
+        // Диалог "О программе"
         aboutProgramItem.addActionListener(e -> {
             // Загружаем картинку котов-программистов
             ImageIcon catsIcon = new ImageIcon(MainWindow.class.getResource("/Images/cats_programmers.jpg"));
@@ -217,12 +239,12 @@ public class MainWindow {
             panel.add(Box.createRigidArea(new Dimension(0, 10))); // отступ
             panel.add(textArea);
 
-            // Показываем диалог
+            // Показываем диалог "О программе"
             JOptionPane.showMessageDialog(frame, panel, "О программе", JOptionPane.INFORMATION_MESSAGE);
         });
 
 
-        // закрытие окна
+        // Обработчик закрытия окна
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
@@ -230,15 +252,15 @@ public class MainWindow {
             }
         });
 
-        // смена вкладок
+        // Обработчик смены вкладок
         tabbedPane.addChangeListener(e -> {
             int index = tabbedPane.getSelectedIndex();
             String title = tabbedPane.getTitleAt(index);
 
             if ("Посещаемость".equals(title)) {
-                attendancePanel.setTodayDate();
+                attendancePanel.setTodayDate(); // при открытии вкладки ставим сегодняшнюю дату
             } else if ("Отчёты".equals(title)) {
-                // 👉 обновляем ReportPanel
+                // // обновляем ReportPanel для текущей группы
                 if (attendancePanel.getCurrentGroup() != null) {
                     reportPanel.setGroup(attendancePanel.getCurrentGroup());
                 }
@@ -249,11 +271,17 @@ public class MainWindow {
         frame.setVisible(true);
     }
 
-
+    /**
+     * Создать список групп по умолчанию (пустой).
+     */
     private static List<Group> createDefaultGroups() {
         return new java.util.ArrayList<>();
     }
 
+    /**
+     * Сохранить данные в файл.
+     * <p>Использует DataManager для записи в Excel, показывает сообщение об успехе или ошибке.</p>
+     */
     private static void saveData(JFrame frame) {
         try {
             DataManager.saveData(groupPanel.getAllGroups());
@@ -268,6 +296,10 @@ public class MainWindow {
         }
     }
 
+    /**
+     * Загрузить данные из файла.
+     * <p>Подтверждает действие, затем загружает данные через DataManager и обновляет панели.</p>
+     */
     private static void loadData(JFrame frame, StudentPanel studentPanel,
                                  AttendancePanel attendancePanel, ReportPanel reportPanel) {
         int result = JOptionPane.showConfirmDialog(frame,
@@ -293,6 +325,10 @@ public class MainWindow {
         }
     }
 
+    /**
+     * Завершение работы приложения.
+     * <p>Предлагает сохранить данные перед выходом.</p>
+     */
     private static void exitApplication(JFrame frame) {
         int result = JOptionPane.showConfirmDialog(frame,
                 "Сохранить данные перед выходом?",
@@ -307,6 +343,10 @@ public class MainWindow {
         // CANCEL — ничего не делаем
     }
 
+    /**
+     * Воспроизвести звук из ресурсов.
+     * @param soundPath путь к файлу звука
+     */
     private static void playSound(String soundPath) {
         try {
             java.net.URL url = MainWindow.class.getResource(soundPath);

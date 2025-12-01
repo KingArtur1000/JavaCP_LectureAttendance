@@ -18,24 +18,42 @@ import org.apache.poi.ss.usermodel.*;
 
 import static com.kingartur1000.MainWindow.globalFont;
 
+/**
+ * Панель для отображения отчёта по посещаемости.
+ * <p>Содержит таблицу студентов, таблицу дат, сортировку и экспорт в Excel.</p>
+ */
 public class ReportPanel extends GridPanel {
+    /** Таблица с ФИО студентов */
     private JTable fixedTable;
+    /** Таблица с посещаемостью по датам */
     private JTable mainTable;
+    /** Модель ФИО */
     private FixedColumnModel fixedModel;
+    /** Модель дат и отметок */
     private AttendanceDatesModel datesModel;
+    /** Метка с названием выбранной группы */
     private JLabel groupLabel = new JLabel("Выбранная группа: —");
+    /** Кнопка экспорта в Excel */
     private JButton exportButton = new JButton("Экспорт");
+    /** Выпадающий список сортировки */
     private JComboBox<String> sortBox = new JComboBox<>(new String[] {
             "По ФИО", "По количеству посещений"
     });
+    /** Текущая выбранная группа */
     private Group currentGroup;
 
+    /**
+     * Конструктор панели отчёта.
+     * <p>Создаёт таблицы, сортировку, кнопку экспорта и размещает всё в сетке.</p>
+     */
     public ReportPanel(List<Group> groups) {
-        super(3, 3);
+        super(3, 3); // сетка 3 на 3
 
+        // Инициализация моделей
         fixedModel = new FixedColumnModel();
         datesModel = new AttendanceDatesModel();
 
+        // Таблица ФИО
         fixedTable = new JTable(fixedModel);
         fixedTable.setRowHeight(30);
         fixedTable.setFont(globalFont);
@@ -43,12 +61,14 @@ public class ReportPanel extends GridPanel {
         fixedTable.getTableHeader().setFont(globalFont);
         fixedTable.getColumnModel().getColumn(0).setPreferredWidth(250);
 
+        // Таблица дат
         mainTable = new JTable(datesModel);
         mainTable.setRowHeight(30);
         mainTable.setFont(globalFont);
         mainTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         mainTable.getTableHeader().setFont(globalFont);
 
+        // Обёртки таблиц
         JScrollPane scrollFixed = new JScrollPane(fixedTable,
                 JScrollPane.VERTICAL_SCROLLBAR_NEVER,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -58,14 +78,17 @@ public class ReportPanel extends GridPanel {
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
+        // Синхронизация вертикальной прокрутки
         scrollFixed.getVerticalScrollBar().setModel(scrollMain.getVerticalScrollBar().getModel());
 
+        // Панель с таблицами
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.add(scrollFixed, BorderLayout.WEST);
         tablePanel.add(scrollMain, BorderLayout.CENTER);
 
         tablePanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
+        // Верхняя панель с группой и сортировкой
         groupLabel.setFont(globalFont);
         sortBox.setFont(globalFont);
         sortBox.addActionListener(e -> applySorting());
@@ -77,24 +100,34 @@ public class ReportPanel extends GridPanel {
         topPanel.add(sortLabel);
         topPanel.add(sortBox);
 
+        // Кнопка экспорта
         exportButton.setFont(globalFont);
         exportButton.setBackground(new Color(95, 212, 124));
         exportButton.setForeground(Color.WHITE);
         exportButton.addActionListener(this::onExport);
 
+        // Размещение в сетке
         addToGrid(topPanel, 0, 0, 1, 3);
         addToGrid(tablePanel, 1, 0, 1, 3);
-        addToGrid(new JPanel(), 2,0,1,1, 2, 1);
+        addToGrid(new JPanel(), 2,0,1,1, 2, 1); // отступ слева
         addToGrid(exportButton, 2, 1, 1, 1, 1, 1);
-        addToGrid(new JPanel(), 2,2,1,1, 2,1);
+        addToGrid(new JPanel(), 2,2,1,1, 2,1); // отступ справа
     }
 
+    /**
+     * Установить текущую группу и применить сортировку.
+     * @param group выбранная группа
+     */
     public void setGroup(Group group) {
         this.currentGroup = group;
         groupLabel.setText("Выбранная группа: " + group.getName() + "                  ");
         applySorting();
     }
 
+    /**
+     * Применить сортировку к списку студентов и обновить таблицы.
+     * <p>Сортировка по ФИО или по количеству посещений.</p>
+     */
     private void applySorting() {
         if (currentGroup == null) return;
 
@@ -107,7 +140,7 @@ public class ReportPanel extends GridPanel {
                 for (AttendanceRecord r : currentGroup.getAttendanceRecords()) {
                     if (r.isPresent(s)) count++;
                 }
-                return -count;
+                return -count; // по убыванию
             }));
         }
 
@@ -126,7 +159,7 @@ public class ReportPanel extends GridPanel {
         int finalWidth = Math.max(maxWidth + 40, 250); // минимум 250, чтобы не было слишком узко
         fixedTable.getColumnModel().getColumn(0).setPreferredWidth(finalWidth);
 
-        // Обновляем ширину scrollFixed
+        // Обновление ширины scrollFixed
         JScrollPane scrollPane = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, fixedTable);
         if (scrollPane != null) {
             scrollPane.setPreferredSize(new Dimension(finalWidth, scrollPane.getPreferredSize().height));
@@ -167,6 +200,10 @@ public class ReportPanel extends GridPanel {
         }
     }
 
+    /**
+     * Экспорт отчёта в Excel.
+     * <p>Создаёт файл .xlsx с таблицей посещаемости и сохраняет его на диск.</p>
+     */
     private void onExport(ActionEvent e) {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Сохранить отчёт");
@@ -177,12 +214,14 @@ public class ReportPanel extends GridPanel {
             try (XSSFWorkbook workbook = new XSSFWorkbook()) {
                 Sheet sheet = workbook.createSheet("Отчёт");
 
+                // Заголовок
                 Row header = sheet.createRow(0);
                 header.createCell(0).setCellValue("ФИО");
                 for (int i = 0; i < datesModel.getColumnCount(); i++) {
                     header.createCell(i + 1).setCellValue(datesModel.getColumnName(i));
                 }
 
+                // Данные
                 for (int row = 0; row < fixedModel.getRowCount(); row++) {
                     Row excelRow = sheet.createRow(row + 1);
                     excelRow.createCell(0).setCellValue(fixedModel.getValueAt(row, 0).toString());
@@ -201,10 +240,12 @@ public class ReportPanel extends GridPanel {
                     }
                 }
 
+                // Автоматическая подгонка ширины столбцов
                 for (int i = 0; i <= datesModel.getColumnCount(); i++) {
                     sheet.autoSizeColumn(i);
                 }
 
+                // Запись файла на диск
                 try (FileOutputStream out = new FileOutputStream(file)) {
                     workbook.write(out);
                 }

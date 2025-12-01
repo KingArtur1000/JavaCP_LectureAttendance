@@ -19,18 +19,27 @@ import java.util.*;
  * Использует Apache POI для работы с .xlsx файлами.
  */
 public class DataManager {
-    private static final String FILE_NAME = "attendance_data.xlsx";
+    private static final String FILE_NAME = "attendance_data.xlsx"; /** Имя файла для хранения данных */
 
-    private static final String SHEET_GROUPS = "Группы";
-    private static final String SHEET_STUDENTS = "Студенты";
-    private static final String SHEET_ATTENDANCE = "Посещаемость";
+    private static final String SHEET_GROUPS = "Группы"; /** Название листа с группами */
 
+    private static final String SHEET_STUDENTS = "Студенты";  /** Название листа со студентами */
+
+    private static final String SHEET_ATTENDANCE = "Посещаемость"; /** Название листа с посещаемостью */
+
+    /**
+     * Сохраняет данные о группах и студентах в Excel файл.
+     *
+     * @param groups список групп для сохранения
+     * @throws IOException если произошла ошибка записи файла
+     */
     public static void saveData(List<Group> groups) throws IOException {
         Workbook workbook = new XSSFWorkbook();
 
         CellStyle headerStyle = createHeaderStyle(workbook);
         CellStyle dateStyle = createDateStyle(workbook);
 
+        // Сохраняем три листа: группы, студенты, посещаемость
         saveGroups(workbook, groups, headerStyle);
         saveStudents(workbook, groups, headerStyle);
         saveAttendance(workbook, groups, headerStyle, dateStyle);
@@ -42,6 +51,12 @@ public class DataManager {
         workbook.close();
     }
 
+    /**
+     * Загружает данные из Excel файла.
+     *
+     * @return список групп с данными студентов и посещаемости
+     * @throws IOException если произошла ошибка чтения файла
+     */
     public static List<Group> loadData() throws IOException {
         try (FileInputStream fileIn = new FileInputStream(FILE_NAME)) {
             Workbook workbook = new XSSFWorkbook(fileIn);
@@ -55,6 +70,13 @@ public class DataManager {
         }
     }
 
+    /*
+     * Метод для сохранения информации о группах.
+     * Алгоритм:
+     * 1. Создать заголовки.
+     * 2. Записать каждую группу в строку.
+     * 3. Автоматически подогнать ширину колонок.
+     */
     private static void saveGroups(Workbook workbook, List<Group> groups, CellStyle headerStyle) {
         Sheet sheet = workbook.createSheet(SHEET_GROUPS);
 
@@ -68,16 +90,31 @@ public class DataManager {
             Group group = groups.get(i);
             Row row = sheet.createRow(rowNum++);
 
+            // Записываем ID, название и количество студентов
             row.createCell(0).setCellValue(i);
             row.createCell(1).setCellValue(group.getName());
             row.createCell(2).setCellValue(group.getStudents().size());
         }
 
+        // Автоматическая подгонка ширины колонок
         for (int i = 0; i < 3; i++) {
             sheet.autoSizeColumn(i);
         }
     }
 
+    /*
+     * Метод для сохранения студентов.
+     * Алгоритм:
+     * 1. Создать заголовки столбцов (ID студента, ФИО, ID группы, название группы, количество посещений).
+     * 2. Для каждой группы пройтись по списку студентов.
+     * 3. Для каждого студента записать его данные в новую строку:
+     *    - уникальный ID студента,
+     *    - полное имя,
+     *    - ID группы,
+     *    - название группы,
+     *    - количество посещений.
+     * 4. После заполнения таблицы автоматически подогнать ширину всех колонок.
+     */
     private static void saveStudents(Workbook workbook, List<Group> groups, CellStyle headerStyle) {
         Sheet sheet = workbook.createSheet(SHEET_STUDENTS);
 
@@ -103,12 +140,20 @@ public class DataManager {
                 row.createCell(4).setCellValue(student.getAttendanceCount());
             }
         }
-
+        // Автоматическая подгонка ширины колонок
         for (int i = 0; i < 5; i++) {
             sheet.autoSizeColumn(i);
         }
     }
 
+
+    /*
+     * Метод для сохранения посещаемости.
+     * Алгоритм:
+     * 1. Для каждой группы пройтись по записям посещаемости.
+     * 2. Для каждой записи сохранить дату, студента и статус.
+     * 3. Автоматически подогнать ширину колонок.
+     */
     private static void saveAttendance(Workbook workbook, List<Group> groups,
                                        CellStyle headerStyle, CellStyle dateStyle) {
         Sheet sheet = workbook.createSheet(SHEET_ATTENDANCE);
@@ -154,6 +199,15 @@ public class DataManager {
         }
     }
 
+    /*
+     * Метод для загрузки информации о группах.
+     * Алгоритм:
+     * 1. Получить лист "Группы" из Excel.
+     * 2. Пройтись по строкам начиная со второй (первая — заголовки).
+     * 3. Считать ID группы и её название.
+     * 4. Создать объект Group и положить его в карту groupMap.
+     * 5. Вернуть карту всех загруженных групп.
+     */
     private static Map<Integer, Group> loadGroups(Workbook workbook) {
         Map<Integer, Group> groupMap = new HashMap<>();
         Sheet sheet = workbook.getSheet(SHEET_GROUPS);
@@ -167,12 +221,22 @@ public class DataManager {
             int groupId = (int) row.getCell(0).getNumericCellValue();
             String groupName = row.getCell(1).getStringCellValue();
 
+            // Добавляем группу в карту по её ID
             groupMap.put(groupId, new Group(groupName));
         }
 
         return groupMap;
     }
 
+    /*
+     * Метод для загрузки студентов.
+     * Алгоритм:
+     * 1. Получить лист "Студенты".
+     * 2. Пройтись по строкам начиная со второй.
+     * 3. Считать ID группы, ФИО студента и количество посещений.
+     * 4. Найти соответствующую группу в карте.
+     * 5. Создать объект Student, установить количество посещений и добавить в группу.
+     */
     private static void loadStudents(Workbook workbook, Map<Integer, Group> groupMap) {
         Sheet sheet = workbook.getSheet(SHEET_STUDENTS);
 
@@ -188,6 +252,7 @@ public class DataManager {
 
             Group group = groupMap.get(groupId);
             if (group != null) {
+                // Создаём студента и добавляем его в группу
                 Student student = new Student(fullName, group);
                 student.setAttendanceCount(attendanceCount);
                 group.addStudent(student);
@@ -195,6 +260,17 @@ public class DataManager {
         }
     }
 
+    /*
+     * Метод для загрузки посещаемости.
+     * Алгоритм:
+     * 1. Получить лист "Посещаемость".
+     * 2. Пройтись по строкам начиная со второй.
+     * 3. Считать ID группы, дату, имя студента и статус посещения.
+     * 4. Определить AttendanceMark (Да, Опоздал, Нет).
+     * 5. Найти группу и студента.
+     * 6. Для каждой даты создать или получить AttendanceRecord.
+     * 7. Добавить отметку посещаемости для студента.
+     */
     private static void loadAttendance(Workbook workbook, Map<Integer, Group> groupMap) {
         Sheet sheet = workbook.getSheet(SHEET_ATTENDANCE);
 
@@ -213,6 +289,7 @@ public class DataManager {
             String studentName = row.getCell(3).getStringCellValue();
             String statusText = row.getCell(4).getStringCellValue();
 
+            // Определяем статус посещаемости
             AttendanceMark mark = switch (statusText) {
                 case "Да" -> AttendanceMark.PRESENT;
                 case "Опоздал" -> AttendanceMark.LATE;
@@ -222,6 +299,7 @@ public class DataManager {
             Group group = groupMap.get(groupId);
             if (group == null) continue;
 
+            // Ищем студента по ФИО
             Student student = group.getStudents().stream()
                     .filter(s -> s.getFullName().equals(studentName))
                     .findFirst()
@@ -234,24 +312,41 @@ public class DataManager {
 
             AttendanceRecord record = dateRecords.get(localDate);
             if (record == null) {
+                // Создаём новую запись посещаемости для даты
                 record = new AttendanceRecord(localDate);
                 dateRecords.put(localDate, record);
                 group.addAttendanceRecord(record);
             }
 
-            // сохраняем статус (три состояния)
+            // сохраняем статус (три состояния: присутствовал, опоздал, отсутствовал)
             record.getMarks().put(student, mark);
         }
     }
 
-    // ==================== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ====================
+// ==================== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ====================
 
+    /*
+     * Метод createCell.
+     * Назначение:
+     * 1. Создать ячейку в указанной строке и колонке.
+     * 2. Установить текстовое значение.
+     * 3. Применить переданный стиль (например, заголовок).
+     */
     private static void createCell(Row row, int column, String value, CellStyle style) {
         Cell cell = row.createCell(column);
         cell.setCellValue(value);
         cell.setCellStyle(style);
     }
 
+    /*
+     * Метод createHeaderStyle.
+     * Назначение:
+     * 1. Создать стиль для заголовков таблицы.
+     * 2. Сделать шрифт жирным, задать размер.
+     * 3. Установить серый фон.
+     * 4. Добавить рамки вокруг ячеек.
+     * Используется для оформления первой строки (заголовков).
+     */
     private static CellStyle createHeaderStyle(Workbook workbook) {
         CellStyle style = workbook.createCellStyle();
         Font font = workbook.createFont();
@@ -267,6 +362,13 @@ public class DataManager {
         return style;
     }
 
+    /*
+     * Метод createDateStyle.
+     * Назначение:
+     * 1. Создать стиль для отображения дат.
+     * 2. Установить формат "dd.MM.yyyy".
+     * Используется для ячеек с датами посещаемости.
+     */
     private static CellStyle createDateStyle(Workbook workbook) {
         CellStyle style = workbook.createCellStyle();
         CreationHelper createHelper = workbook.getCreationHelper();
@@ -274,7 +376,14 @@ public class DataManager {
         return style;
     }
 
+    /**
+     * Проверяет, существует ли файл с данными.
+     *
+     * @return true если файл существует, иначе false
+     */
     public static boolean dataFileExists() {
+        // Проверяем наличие файла по имени FILE_NAME
         return new java.io.File(FILE_NAME).exists();
     }
 }
+
