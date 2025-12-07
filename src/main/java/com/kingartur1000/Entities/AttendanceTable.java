@@ -8,6 +8,8 @@ import java.util.Map;
 /**
  * Модель таблицы для отображения текущего статуса посещаемости студентов.
  * <p>Первая колонка содержит ФИО студента, вторая — его статус (ABSENT, PRESENT, LATE).</p>
+ * @author Артур
+ * @version 1.9
  */
 public class AttendanceTable extends AbstractTableModel {
     /**

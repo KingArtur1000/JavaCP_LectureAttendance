@@ -21,6 +21,8 @@ import static com.kingartur1000.MainWindow.globalFont;
 /**
  * Панель для отображения отчёта по посещаемости.
  * <p>Содержит таблицу студентов, таблицу дат, сортировку и экспорт в Excel.</p>
+ * @author Роман
+ * @version 1.9
  */
 public class ReportPanel extends GridPanel {
     /** Таблица с ФИО студентов */

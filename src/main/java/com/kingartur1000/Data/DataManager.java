@@ -17,6 +17,8 @@ import java.util.*;
 /**
  * Менеджер для сохранения и загрузки данных в/из Excel файла.
  * Использует Apache POI для работы с .xlsx файлами.
+ * @author Артур И Роман
+ * @version 1.9
  */
 public class DataManager {
     private static final String FILE_NAME = "attendance_data.xlsx"; /** Имя файла для хранения данных */

@@ -6,6 +6,8 @@ import java.util.List;
 /**
  * Модель таблицы для отображения списка студентов.
  * <p>Колонки: ФИО, название группы, количество посещений (с процентом).</p>
+ * @author Артур
+ * @version 1.9
  */
 public class StudentTable extends AbstractTableModel {
     /** Список студентов */

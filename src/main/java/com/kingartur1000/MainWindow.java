@@ -11,6 +11,8 @@ import java.util.List;
 /**
  * Главный класс приложения.
  * <p>Создаёт основное окно, вкладки, меню и управляет загрузкой/сохранением данных.</p>
+ *  @author Роман и Артур
+ *  @version 1.9
  */
 public class MainWindow {
     /** Список всех групп */
@@ -27,10 +29,16 @@ public class MainWindow {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
+            // 1. Показываем SplashScreen
             SplashScreenWindow splash = new SplashScreenWindow();
             splash.showSplash(
-                    MainWindow::createAndShowMainWindow, // что делать после загрузки
-                    MainWindow::loadInitialData           // сама загрузка
+                    // 2. После загрузки данных открываем WelcomeWindow
+                    () -> {
+                        WelcomeWindow welcome = new WelcomeWindow(MainWindow::createAndShowMainWindow);
+                        welcome.setVisible(true);
+                    },
+                    // 3. Задача загрузки данных
+                    MainWindow::loadInitialData
             );
         });
     }
@@ -64,9 +72,9 @@ public class MainWindow {
         JMenuBar menuBar = new JMenuBar();
         menuBar.setFont(globalFont);
         JMenu fileMenu = new JMenu("Файл");
-        JMenu whatMenu = new JMenu("?");
+        JMenu helpMenu = new JMenu("?");
         fileMenu.setFont(new Font("Arial", Font.BOLD, 20));
-        whatMenu.setFont(new Font("Arial", Font.BOLD, 20));
+        helpMenu.setFont(new Font("Arial", Font.BOLD, 20));
 
         JMenuItem saveItem = new JMenuItem("Сохранить");
         saveItem.setFont(globalFont);
@@ -82,13 +90,17 @@ public class MainWindow {
 
         JMenuItem aboutAuthorItem = new JMenuItem("Об авторах");
         JMenuItem aboutProgramItem = new JMenuItem("О программе");
+        JMenuItem versionItem = new JMenuItem("Версия программы 1.9");
         aboutAuthorItem.setFont(globalFont);
         aboutProgramItem.setFont(globalFont);
-        whatMenu.add(aboutAuthorItem);
-        whatMenu.add(aboutProgramItem);
+        versionItem.setFont(globalFont);
+
+        helpMenu.add(aboutAuthorItem);
+        helpMenu.add(aboutProgramItem);
+        helpMenu.add(versionItem);
 
         menuBar.add(fileMenu);
-        menuBar.add(whatMenu);
+        menuBar.add(helpMenu);
         frame.setJMenuBar(menuBar);
 
         // Вкладки
@@ -111,11 +123,10 @@ public class MainWindow {
         GridPanel bottomGrid = new GridPanel(1, 6);
         bottomGrid.setFont(globalFont);
 
-        // Таймер работы программы
         JLabel timerLabel = new JLabel("Время работы: 00:00");
         timerLabel.setFont(globalFont);
         timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        bottomGrid.addToGrid(timerLabel, 0, 0, 1,1,3,1); // ставим в центр
+        bottomGrid.addToGrid(timerLabel, 0, 0, 1,1,3,1);
 
         long startTime = System.currentTimeMillis();
         new javax.swing.Timer(1000, e -> {
@@ -125,7 +136,6 @@ public class MainWindow {
             timerLabel.setText(String.format("Время работы: %02d:%02d", minutes, seconds));
         }).start();
 
-        // Кнопка выхода
         JButton exitButton = new JButton("Выход");
         exitButton.setFont(globalFont);
         exitButton.setForeground(Color.BLACK);
@@ -133,7 +143,6 @@ public class MainWindow {
         exitButton.addActionListener(e -> exitApplication(frame));
         bottomGrid.addToGrid(exitButton, 0, 1,1,1,1,1);
 
-        // Основная сетка
         GridPanel mainGrid = new GridPanel(2, 1);
         mainGrid.setFont(globalFont);
         mainGrid.addToGrid(tabbedPane, 0, 0, 1, 1, 1, 12);
@@ -149,59 +158,85 @@ public class MainWindow {
 
         // Диалог "Об авторах"
         aboutAuthorItem.addActionListener(e -> {
-            // Загружаем изображения из ресурсов
             ImageIcon arturIcon = new ImageIcon(MainWindow.class.getResource("/Images/Artur.jpg"));
             ImageIcon romanIcon = new ImageIcon(MainWindow.class.getResource("/Images/Roman.jpg"));
 
-            // Масштабируем изображения
             Image scaledArtur = arturIcon.getImage().getScaledInstance(256, 256, Image.SCALE_SMOOTH);
             Image scaledRoman = romanIcon.getImage().getScaledInstance(256, 328, Image.SCALE_SMOOTH);
 
-            // Создаём иконки
             ImageIcon arturScaledIcon = new ImageIcon(scaledArtur);
             ImageIcon romanScaledIcon = new ImageIcon(scaledRoman);
 
-            // Панель с вертикальным расположением
             JPanel panel = new JPanel();
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-            // Панель Артура
             JPanel arturPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             JLabel arturLabel = new JLabel(arturScaledIcon);
             arturPanel.add(arturLabel);
             arturPanel.add(new JLabel("<html><b>Дмитриев Артур Александрович</b><br>студент БНТУ, ФИТР, гр. 10702423</html>"));
 
-            // Панель Романа
             JPanel romanPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             JLabel romanLabel = new JLabel(romanScaledIcon);
             romanPanel.add(romanLabel);
             romanPanel.add(new JLabel("<html><b>Мосейко Роман Андреевич</b><br>студент БНТУ, ФИТР, гр. 10702423</html>"));
 
-            // Добавляем всё в основную панель
             panel.add(arturPanel);
             panel.add(romanPanel);
 
-            // Добавляем обработчики клика по картинкам
             arturLabel.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseClicked(java.awt.event.MouseEvent e) {
-                    playSound("/Sounds/artursound.wav"); // звук для Артура
+                    playSound("/Sounds/artursound.wav");
                 }
             });
 
             romanLabel.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseClicked(java.awt.event.MouseEvent e) {
-                    playSound("/Sounds/romansound.wav"); // звук для Романа
+                    playSound("/Sounds/romansound.wav");
                 }
             });
 
-            // Показываем диалог
             JOptionPane.showMessageDialog(frame, panel, "Об авторах", JOptionPane.INFORMATION_MESSAGE);
         });
 
-        // Диалог "О программе"
+        // Диалог "О программе" (руководство пользователя)
         aboutProgramItem.addActionListener(e -> {
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+            JLabel titleLabel = new JLabel("Руководство пользователя");
+            titleLabel.setFont(new Font("Times New Roman", Font.BOLD, 22));
+            titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panel.add(titleLabel);
+
+            panel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+            JTextArea textArea = new JTextArea(
+                    "Добро пожаловать в программу учета посещаемости!\n\n" +
+                            "Основные возможности:\n" +
+                            "• Управление списком учебных групп и их добавление\n" +
+                            "• Добавление, редактирование и удаление студентов\n" +
+                            "• Отметка присутствия,отсутствия и опоздания студентов на занятиях\n" +
+                            "• Формирование отчётов и возможность их сохранения в памяти устройства\n\n" +
+                            "Дополнительно:\n" +
+                            "• Сохранение и загрузка данных через меню 'Файл'\n" +
+                            "• Таймер работы программы\n" +
+                            "• Кнопка 'Выход' завершает работу программы\n\n" +
+                            "Совет: перед выходом сохраняйте данные, чтобы не потерять изменения."
+            );
+            textArea.setFont(globalFont);
+            textArea.setEditable(false);
+            textArea.setOpaque(false);
+            textArea.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            panel.add(textArea);
+
+            JOptionPane.showMessageDialog(frame, panel, "О программе", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        // Диалог "Версия программы 1.9"
+        versionItem.addActionListener(e -> {
             // Загружаем картинку котов-программистов
             ImageIcon catsIcon = new ImageIcon(MainWindow.class.getResource("/Images/cats_programmers.jpg"));
             Image scaledCats = catsIcon.getImage().getScaledInstance(600, 375, Image.SCALE_SMOOTH);
@@ -216,14 +251,24 @@ public class MainWindow {
             catsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             panel.add(catsLabel);
 
-            // Текст снизу
+            panel.add(Box.createRigidArea(new Dimension(0, 10))); // отступ
+
+            // Заголовок
+            JLabel titleLabel = new JLabel("История изменений");
+            titleLabel.setFont(new Font("Times New Roman", Font.BOLD, 22));
+            titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panel.add(titleLabel);
+
+            panel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+            // Текст с историей версий
             JTextArea textArea = new JTextArea(
-                    "Версия программы: 1.8\n" +
+                    "Версия программы: 1.9\n" +
                             "--------------------------------------\n" +
-                            " Истрия изменений:\n" +
+                            "• 1.9: Добавлен WelcomeWindow (титульный лист) и комментарии\n" +
                             "• 1.8: Переделаны отчёты и посещаемость\n" +
-                            "• 1.7: Переделаны границы столбоцов\n" +
-                            "• 1.6: Переделана панель о программе\n" +
+                            "• 1.7: Переделаны границы столбцов\n" +
+                            "• 1.6: Переделана панель 'О программе'\n" +
                             "• 1.5: Добавлено звуковое сопровождение\n" +
                             "• 1.4: Добавлен таймер времени работы программы\n" +
                             "• 1.3: SplashScreen с прогресс-баром\n" +
@@ -236,11 +281,10 @@ public class MainWindow {
             textArea.setOpaque(false);
             textArea.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            panel.add(Box.createRigidArea(new Dimension(0, 10))); // отступ
             panel.add(textArea);
 
-            // Показываем диалог "О программе"
-            JOptionPane.showMessageDialog(frame, panel, "О программе", JOptionPane.INFORMATION_MESSAGE);
+            // Показываем диалог
+            JOptionPane.showMessageDialog(frame, panel, "Версия программы 1.9", JOptionPane.INFORMATION_MESSAGE);
         });
 
 
@@ -260,13 +304,11 @@ public class MainWindow {
             if ("Посещаемость".equals(title)) {
                 attendancePanel.setTodayDate(); // при открытии вкладки ставим сегодняшнюю дату
             } else if ("Отчёты".equals(title)) {
-                // // обновляем ReportPanel для текущей группы
                 if (attendancePanel.getCurrentGroup() != null) {
                     reportPanel.setGroup(attendancePanel.getCurrentGroup());
                 }
             }
         });
-
 
         frame.setVisible(true);
     }

@@ -21,6 +21,8 @@ import static com.kingartur1000.MainWindow.globalFont;
  * Панель для отображения и редактирования посещаемости студентов.
  * <p>Содержит: выбор даты, таблицу студентов, статистику, справку и кнопку сохранения.</p>
  * <p>Обновляется при смене группы или даты, сохраняет данные в модель AttendanceRecord.</p>
+ * @author Роман
+ * @version 1.9
  */
 public class AttendancePanel extends GridPanel {
     /** Таблица студентов с их статусами */
@@ -144,7 +146,9 @@ public class AttendancePanel extends GridPanel {
      */
     public void setGroup(Group g) {
         this.currentGroup = g;
+
         if (g != null) {
+            // Загружаем студентов в таблицу
             attendanceTable = new AttendanceTable(g.getStudents());
             table.setModel(attendanceTable);
 
@@ -180,14 +184,20 @@ public class AttendancePanel extends GridPanel {
                 }
             });
 
+            // Обновляем метку группы как в StudentPanel
+            groupLabel.setText("Выбранная группа: " + g.getName() +
+                    " (" + g.getStudents().size() + " студентов)");
+
+            // Обновляем статистику
+            totalLabel.setText("Всего студентов: " + g.getStudents().size());
+            presentLabel.setText("Присутствуют: —");
+            absentLabel.setText("Отсутствуют: —");
+
+            // Загружаем посещаемость, если дата выбрана
             if (currentDate != null) {
                 loadAttendanceForDate(currentDate);
             }
 
-            groupLabel.setText("Выбранная группа: " + currentGroup.getName());
-            totalLabel.setText("Всего студентов: " + g.getStudents().size());
-            presentLabel.setText("Присутствуют: —");
-            absentLabel.setText("Отсутствуют: —");
         } else {
             attendanceTable = new AttendanceTable(new ArrayList<>());
             table.setModel(attendanceTable);
@@ -199,6 +209,7 @@ public class AttendancePanel extends GridPanel {
             absentLabel.setText("Отсутствуют: —");
         }
     }
+
 
     /** @return текущая выбранная группа */
     public Group getCurrentGroup() {
@@ -220,6 +231,8 @@ public class AttendancePanel extends GridPanel {
     private void loadAttendanceForDate(LocalDate date) {
         if (currentGroup == null) return;
 
+        totalLabel.setText("Всего студентов: " + currentGroup.getStudents().size());
+
         currentRecord = currentGroup.getAttendanceRecordByDate(date);
 
         if (currentRecord == null) {
@@ -238,6 +251,7 @@ public class AttendancePanel extends GridPanel {
         presentLabel.setText("Присутствуют: " + presentCount);
         absentLabel.setText("Отсутствуют: " + (currentGroup.getStudents().size() - presentCount));
     }
+
 
     /**
      * Обработчик кнопки сохранения посещаемости.

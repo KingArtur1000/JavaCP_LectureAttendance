@@ -8,6 +8,8 @@ import java.util.*;
 /**
  * Модель таблицы для отображения посещаемости студентов по датам.
  * <p>Используется в Swing JTable для рендеринга данных.</p>
+ * @author Артур
+ * @version 1.9
  */
 public class AttendanceDatesModel extends AbstractTableModel {
     private List<Student> students = new ArrayList<>(); /** Список студентов выбранной группы */

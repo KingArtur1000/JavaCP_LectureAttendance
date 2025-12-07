@@ -4,12 +4,14 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import com.kingartur1000.Entities.AttendanceTable.AttendanceMark;
-
-public class AttendanceRecord {
     /**
      * Класс AttendanceRecord хранит информацию о посещаемости студентов в конкретную дату.
      * <p>Содержит карту Student -> AttendanceMark и методы для работы с отметками.</p>
+     * @author Артур
+     * @version 1.9
      */
+public class AttendanceRecord {
+
     private LocalDate date; /** Дата посещаемости */
     private Map<Student, AttendanceMark> marks; /** Карта: студент -> статус посещаемости */
     /**

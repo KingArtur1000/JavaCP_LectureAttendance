@@ -7,6 +7,8 @@ import java.util.List;
 /**
  * Модель таблицы с фиксированной одной колонкой.
  * <p>Отображает только список студентов (ФИО).</p>
+ * @author Артур
+ * @version 1.9
  */
 public class FixedColumnModel extends AbstractTableModel {
     /** Список студентов выбранной группы */

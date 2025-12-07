@@ -15,6 +15,8 @@ import static com.kingartur1000.MainWindow.globalFont;
 /**
  * Панель для управления студентами выбранной группы.
  * <p>Содержит таблицу студентов, кнопки добавления/удаления/редактирования и информацию о группе.</p>
+ * @author Роман
+ * @version 1.9
  */
 public class StudentPanel extends GridPanel {
     /** Таблица студентов */

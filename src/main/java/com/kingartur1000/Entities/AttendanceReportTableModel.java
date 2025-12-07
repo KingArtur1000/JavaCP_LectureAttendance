@@ -7,6 +7,8 @@ import java.util.*;
 /**
  * Модель таблицы для отображения отчёта по посещаемости студентов.
  * <p>Первая колонка содержит ФИО студента, остальные — даты посещаемости.</p>
+ * @author Артур
+ * @version 1.9
  */
 public class AttendanceReportTableModel extends AbstractTableModel {
     /** Список студентов выбранной группы */

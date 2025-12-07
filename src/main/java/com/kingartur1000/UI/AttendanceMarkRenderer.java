@@ -12,6 +12,8 @@ import java.awt.*;
  * - Чёрная галочка для PRESENT,
  * - Красная галочка для LATE,
  * - Пустая ячейка для ABSENT.</p>
+ * @author Роман
+ * @version 1.9
  */
 public class AttendanceMarkRenderer extends JCheckBox implements TableCellRenderer {
 

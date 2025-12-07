@@ -6,6 +6,8 @@ import java.util.List;
 /**
  * Модель таблицы для отображения списка учебных групп.
  * <p>Первая колонка содержит название группы, вторая — количество студентов.</p>
+ * @author Артур
+ * @version 1.9
  */
 public class GroupTable extends AbstractTableModel {
     /** Список групп */

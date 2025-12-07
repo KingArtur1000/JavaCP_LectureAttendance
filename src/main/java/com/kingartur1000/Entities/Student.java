@@ -3,6 +3,8 @@ package com.kingartur1000.Entities;
 /**
  * Класс Student представляет студента учебной группы.
  * <p>Содержит ФИО, ссылку на группу и количество посещений.</p>
+ * @author Артур
+ * @version 1.9
  */
 public class Student {
     /** Полное имя студента */
